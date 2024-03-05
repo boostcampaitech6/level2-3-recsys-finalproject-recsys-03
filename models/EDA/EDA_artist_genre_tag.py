@@ -4,7 +4,7 @@ import os
 import matplotlib.pyplot as plt
 
 ## Data 불러오기
-#os.chdir('/home/jjw/level2-3-recsys-finalproject-recsys-03/models')
+os.chdir('/home/jjw/level2-3-recsys-finalproject-recsys-03/models')
 #os.getcwd()
 data_path = 'data/'
 interaction = pd.read_csv(data_path+"interaction.csv",index_col=0)
@@ -25,7 +25,7 @@ top_artists_by_listening = artist_listening_sum.sort_values(by='total_listening'
 # plot
 plt.figure(figsize=(20, 12))
 plt.barh(top_artists_by_listening['artist_name'], top_artists_by_listening['total_listening'])
-plt.xlabel('Total Listening Count')
+plt.xlabel('Total Listening Count') 
 plt.ylabel('Artist')
 plt.title('Top 50 Artists by Total Listening')
 plt.gca().invert_yaxis() 
@@ -144,7 +144,7 @@ for tag_dict in sideinfo_tag:
 unique_tags_over_50 = set(tags_over_50)
 print(len(unique_tags_over_50))
 # tag의 unique 갯수
-# 전체: 50081개 / 50이하: 50015개 / 50초과: 739개
+# 전체: 50081개 / weight 50이하: 50015개 / weight 50초과: 739개
 # 50초과 List에 없는 top_3_df['Top1 tag'] 존재
 
 
@@ -208,3 +208,60 @@ top_3_df = pd.DataFrame(top_3_per_row, columns=columns)
 print(top_3_df['Top1 Count'].value_counts().head(10))
 # Top1 Tag : Weight 100이 5637개 
 
+## Tag 생성
+
+sideinfo_tag = sideinfo['tags'].apply(eval)
+
+tag_sums = {}
+tag_freqs = {}
+
+# 데이터를 반복하여 각 태그의 합계와 빈도수 계산
+for item in sideinfo_tag:
+    for tag, value in item.items():
+        # 태그의 합계 업데이트
+        if tag in tag_sums:
+            tag_sums[tag] += value
+        else:
+            tag_sums[tag] = value
+
+        # 태그의 빈도수 업데이트
+        if tag in tag_freqs:
+            tag_freqs[tag] += 1
+        else:
+            tag_freqs[tag] = 1
+
+tag_rank = pd.DataFrame({'Tag': list(tag_sums.keys()), 'Sum': list(tag_sums.values()), 'Frequency': list(tag_freqs.values())})
+tag_rank['Sum Rank'] = tag_rank['Sum'].rank(method='max', ascending=False).astype(int)
+tag_rank['Frequency Rank'] = tag_rank['Frequency'].rank(method='max', ascending=False).astype(int)
+
+tag_rank = tag_rank.sort_values(by='Sum', ascending=False)
+
+tag_rank.to_csv('tag.csv',index=False)
+
+
+bins = pd.qcut(tag_rank['Sum'], q=10)
+bin_counts = bins.value_counts().sort_index()
+
+
+
+tag_rank = tag_rank.sort_values(by='Sum', ascending=False)
+plt.figure(figsize=(40, 24))
+plt.bar(range(len(tag_rank)), tag_rank['Sum'])
+plt.xticks([])
+plt.ylim(0, 220000) 
+plt.xlabel('Tag', fontsize=14)
+plt.ylabel('Sum', fontsize=14)
+plt.title('Tag by weight sum', fontsize=16)
+plt.tight_layout()
+plt.savefig('Tag by weight sum')
+
+tag_rank = tag_rank.sort_values(by='Frequency', ascending=False)
+plt.figure(figsize=(40, 24))
+plt.bar(range(len(tag_rank)), tag_rank['Frequency'])
+plt.xticks([])
+plt.ylim(0, 5000) 
+plt.xlabel('Tag', fontsize=14)
+plt.ylabel('Frequency', fontsize=14)
+plt.title('Tag by Frequency', fontsize=16)
+plt.tight_layout()
+plt.savefig('Tag by Frequency')
