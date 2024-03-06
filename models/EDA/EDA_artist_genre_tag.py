@@ -208,23 +208,19 @@ top_3_df = pd.DataFrame(top_3_per_row, columns=columns)
 print(top_3_df['Top1 Count'].value_counts().head(10))
 # Top1 Tag : Weight 100이 5637개 
 
-## Tag 생성
+### Tag.csv 생성 ###
 
 sideinfo_tag = sideinfo['tags'].apply(eval)
 
 tag_sums = {}
 tag_freqs = {}
 
-# 데이터를 반복하여 각 태그의 합계와 빈도수 계산
 for item in sideinfo_tag:
     for tag, value in item.items():
-        # 태그의 합계 업데이트
         if tag in tag_sums:
             tag_sums[tag] += value
         else:
             tag_sums[tag] = value
-
-        # 태그의 빈도수 업데이트
         if tag in tag_freqs:
             tag_freqs[tag] += 1
         else:
@@ -234,16 +230,10 @@ tag_rank = pd.DataFrame({'Tag': list(tag_sums.keys()), 'Sum': list(tag_sums.valu
 tag_rank['Sum Rank'] = tag_rank['Sum'].rank(method='max', ascending=False).astype(int)
 tag_rank['Frequency Rank'] = tag_rank['Frequency'].rank(method='max', ascending=False).astype(int)
 
-tag_rank = tag_rank.sort_values(by='Sum', ascending=False)
-
+tag_rank = tag_rank.sort_values(by='Frequency', ascending=False)
 tag_rank.to_csv('tag.csv',index=False)
 
-
-bins = pd.qcut(tag_rank['Sum'], q=10)
-bin_counts = bins.value_counts().sort_index()
-
-
-
+# Plot : Tag by weight sum
 tag_rank = tag_rank.sort_values(by='Sum', ascending=False)
 plt.figure(figsize=(40, 24))
 plt.bar(range(len(tag_rank)), tag_rank['Sum'])
@@ -255,6 +245,7 @@ plt.title('Tag by weight sum', fontsize=16)
 plt.tight_layout()
 plt.savefig('Tag by weight sum')
 
+# Plot : Tag by Frequency
 tag_rank = tag_rank.sort_values(by='Frequency', ascending=False)
 plt.figure(figsize=(40, 24))
 plt.bar(range(len(tag_rank)), tag_rank['Frequency'])
