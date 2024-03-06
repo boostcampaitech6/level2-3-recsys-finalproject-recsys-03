@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "models"
+version = "0.1.0"
+description = ""
+authors = ["Jang jaewon <8chris8@naver.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+numpy = "^1.26.4"
+pandas = "^2.2.1"
+matplotlib = "^3.8.3"
+scikit-learn = "^1.4.1.post1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
