@@ -77,7 +77,7 @@ async def login(token_info:Token):
     )
     return JSONResponse(content={"success": True, "message": "Operation successful"})
 
-@router.post('/recommend')
+@router.put('/recommend')
 async def recommend_tag(chatRequest:ChatRequest):
     chat = chatRequest.chat
 

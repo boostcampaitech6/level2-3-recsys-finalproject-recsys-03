@@ -1,0 +1,33 @@
+.login{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #070F2B;
+    width: 100%;
+    height: 100vh;
+}
+
+.login button {
+    border-radius: 15px;
+    margin: 3px 3px 3px; 
+    padding: 3px 10px;
+    background-color: #9290C3;
+    border: 2px solid #535C91;
+    color: #1B1A55;
+    font-size: large;
+    font-weight: bolder;
+}
+
+.login h1{
+    font-size: 30vh;
+    font-weight: bolder;
+    color: #9290C3;
+    line-height: 0.7em;
+}
+
+.login h3{
+    font-size: large;
+    font-weight: bolder;
+    color: #9290C3;
+}

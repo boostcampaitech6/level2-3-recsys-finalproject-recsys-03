@@ -6,7 +6,7 @@ authors = ["jinmin <ramyeon00@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "3.9.6"
+python = "^3.9.5"
 fastapi = "^0.110.0"
 itsdangerous = "^2.1.2"
 pydantic-settings = "^2.2.1"

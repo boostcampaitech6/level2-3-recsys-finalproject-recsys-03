@@ -1,0 +1,118 @@
+.service_chat{
+    display: flex;
+    flex-direction:row;
+    justify-content: left;
+    align-items: center;
+    background-color: #9290C3;
+    border: 2px solid #535C91;
+    width: fit-content;
+    border-radius: 15px;
+    margin: 15px 3px 3px 15px;
+    padding: 0px 5px 0px 5px;
+}
+
+.tag{
+    border-radius: 15px;
+    margin: 7px 5px 7px 5px; 
+    padding: 3px 10px;
+    background-color: #9290C3;
+    border: 2px solid #535C91;
+    color: #1B1A55;
+    font-weight: bolder;
+}
+
+.user_chat{
+    display: flex;
+    flex-direction:column;
+    justify-content: left;
+    width: fit-content;
+    margin-left: auto;
+    padding-right: 15px;
+}
+
+.chat{
+    align-items: center;
+    background-color: #9290C3;
+    border: 2px solid #535C91;
+    border-radius: 15px;
+    margin: 15px 3px 3px 15px;
+    padding: 3px 15px;
+    color: #1B1A55;
+    font-weight: bolder;
+}
+
+.playlist_box{
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: center;
+    background-color: #9290C3;
+    width: fit-content;
+    margin: 15px 3px 3px 15px;
+    padding: 0px 5px 0px 5px;
+}
+
+.playlist_head{
+    display: flex;
+    flex-direction: row;
+    font-weight: bolder;
+    color: #1B1A55;
+}
+
+.save{
+    margin: 7px 5px 7px 5px; 
+    padding: 3px 10px;
+    background-color: #9290C3;
+    border: none;
+    color: #1B1A55;
+    font-weight: bolder;
+}
+
+.playlist_content{
+    display: flex;
+    flex-direction: column;   
+}
+
+.song{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;  
+}
+
+.song_info{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;   
+}
+
+.title{
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    color: #1B1A55;
+    font-weight: bolder;
+}
+
+.artist{
+    margin-top: 0px;
+    padding-top: 0px;
+    color: #535C91;
+    font-size: small;
+}
+
+.remove{
+    margin: 3px; 
+    padding: 3px;
+    background-color: #9290C3;
+    color: #535C91;
+    font-weight: bolder;
+    border: none;
+}
+
+.play{
+    margin: 3px; 
+    padding: 3px;
+    background-color: #9290C3;
+    color: #535C91;
+    font-weight: bolder;
+    border: none;
+}
