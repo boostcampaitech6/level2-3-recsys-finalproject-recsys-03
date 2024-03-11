@@ -1,4 +1,4 @@
-from tag_model import recommend_songs
+from models.tag_model import recommend_songs
 from filter import filter_model
 
 import pandas as pd
