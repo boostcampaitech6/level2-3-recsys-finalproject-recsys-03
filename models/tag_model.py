@@ -52,7 +52,7 @@ def recommend_songs(input_tags, N=10):
     similar_indices = cosine_sim.argsort()[0][-N-1:-1][::-1]
 
     # 추천된 노래의 track_name 출력
-    recommended_songs = [(track_names[i], artist_names[i], uris[i]) for i in similar_indices]
+    recommended_songs = [{"title" : track_names[i], "artist" : artist_names[i], "uri" : uris[i]} for i in similar_indices]
 
     return recommended_songs
 
@@ -62,3 +62,4 @@ if __name__ == "__main__":
     input_tags = "pop Love life"
     # 입력된 태그로 노래 추천
     logger.info(f"추천된 노래의 Track ID: {recommend_songs(input_tags)}")
+    logger.info(f"추천된 노래의 Track ID: {recommend_songs(input_tags)[1]['title']}")
