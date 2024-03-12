@@ -4,23 +4,8 @@ import Playlist from './playlist'
 
 
 function InfoList(props) {
-    let tags = props.tags
     let chats = props.chats
     let playlists = props.playlists
-
-    //do tag based recommendation
-    const onSubmit = (event) => {
-        return
-    }
-
-    //tag chat component
-    const tag_list = tags.map((tag, index)=>{
-        return (
-            <div key={index}>
-                <button className='tag' onClick={onSubmit}>{tag}</button>
-            </div>
-        )
-    })
 
     //user chat component
     const chat_list = chats.map((chat, index)=>{
@@ -41,9 +26,6 @@ function InfoList(props) {
                 {props.playlists.length > index+1 &&
                     <div>
                         <Playlist playlist={props.playlists[index+1]} login={props.login}/>
-                        <div className='service_chat'>
-                            {tag_list}
-                        </div>
                     </div>
                 }
             </div>
@@ -53,13 +35,7 @@ function InfoList(props) {
     
     return(
         <div>
-            <div className='service_chat'>
-                {tag_list}
-            </div>
-            <div>
-                {recommendation}
-            </div>
-
+            {recommendation}
         </div>
     )
 

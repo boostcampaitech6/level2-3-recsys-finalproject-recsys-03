@@ -65,7 +65,21 @@ function Service(props) {
     }
 
     //태그 리스트(나중에 추천 모델 연결)
-    const tags = ["겨울", "인디", "잔잔한", "휴식"]
+    const tags = ["겨울", "인디", "잔잔한", "휴식", "팝", "이지리스닝"]
+
+    //do tag based recommendation
+    const clickTag = (event) => {
+        return
+    }
+
+    //tag chat component
+    const tag_list = tags.map((tag, index)=>{
+        return (
+            <div key={index}>
+                <button className='tag' onClick={clickTag}>{tag}</button>
+            </div>
+        )
+    })
 
     //추천 플레이리스트 가져오기
     const getPlaylist = (chat) => {
@@ -102,6 +116,9 @@ function Service(props) {
                 />
                 <button className='chatSubmit' onClick={onSubmit}>전송</button>
             </form>
+            <div className='tagList'>
+                {tag_list}
+            </div>
             <Footer />
         </div>
     )

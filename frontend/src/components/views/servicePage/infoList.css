@@ -11,16 +11,6 @@
     padding: 0px 5px 0px 5px;
 }
 
-.tag{
-    border-radius: 15px;
-    margin: 7px 5px 7px 5px; 
-    padding: 3px 10px;
-    background-color: #9290C3;
-    border: 2px solid #535C91;
-    color: #1B1A55;
-    font-weight: bolder;
-}
-
 .user_chat{
     display: flex;
     flex-direction:column;
