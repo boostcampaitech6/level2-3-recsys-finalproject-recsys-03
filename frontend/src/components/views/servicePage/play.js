@@ -41,7 +41,6 @@ function Play(props) {
     const [Pause, setPause] = useState(true)
     let playlist = props.playlist
     let current_uri = props.current_uri
-    //let token = props.token
     let token = localStorage.getItem("accessToken")
     let device_id = props.device_id
     let uris = playlist.map(song => song.uri)

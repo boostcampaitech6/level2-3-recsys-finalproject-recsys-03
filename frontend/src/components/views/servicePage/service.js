@@ -21,6 +21,7 @@ function Service(props) {
     const [Chat, setChat] = useState("")
     const [ChatList, setChatList] = useState([])
     const [Playlist, setPlaylist] = useState([])
+    const [Playlists, setPlaylists] = useState([])
     const [Login, setLogin] = useState(false)
 
     useEffect(()=> {
@@ -41,6 +42,10 @@ function Service(props) {
             console.log("guest login")
         }
     }, [])
+
+    useEffect(()=> {
+        setPlaylists(Playlists.concat([Playlist]))
+    }, [Playlist])
 
     //post access tocken
     const sendToken = (token_info) => {
@@ -68,7 +73,6 @@ function Service(props) {
         .then(response => {
             if(response.data.success){
                 console.log("succes to get playlist")
-                console.log(response.data.playlist)
                 setPlaylist(response.data.playlist)
             }else{
                 console.log('fail to get playlist')
@@ -89,7 +93,7 @@ function Service(props) {
         <div className='page'>
             <NavBar />
             <div className='chatbox'>
-                <InfoList tags={tags} chats={ChatList} playlist={Playlist} login={Login}/>
+                <InfoList tags={tags} chats={ChatList} playlists={Playlists} login={Login}/>
             </div>
             <form onSubmit={onSubmit} className='chatform'>
                 <textarea className='enterChat'

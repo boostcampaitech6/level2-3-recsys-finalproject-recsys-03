@@ -6,7 +6,7 @@ import Playlist from './playlist'
 function InfoList(props) {
     let tags = props.tags
     let chats = props.chats
-    let playlist = props.playlist
+    let playlists = props.playlists
 
     //do tag based recommendation
     const onSubmit = (event) => {
@@ -31,20 +31,34 @@ function InfoList(props) {
         )
     })
 
+    const recommendation = chats.map((section, index)=>{
+        console.log(props.playlists)
+        return(
+            <div key={index}>
+                <div>
+                    <h3 className='chat'>{chats[index]}</h3>
+                </div>
+                {props.playlists.length > index+1 &&
+                    <div>
+                        <Playlist playlist={props.playlists[index+1]} login={props.login}/>
+                        <div className='service_chat'>
+                            {tag_list}
+                        </div>
+                    </div>
+                }
+            </div>
+        )
+    })
+
     
     return(
         <div>
             <div className='service_chat'>
                 {tag_list}
             </div>
-            {chats.length >= 1 &&
-                <div className='user_chat'>
-                    {chat_list}
-                </div>
-            }
-            {playlist.length >= 1 &&
-                <Playlist playlist={playlist} login={props.login}/>
-            }
+            <div>
+                {recommendation}
+            </div>
 
         </div>
     )

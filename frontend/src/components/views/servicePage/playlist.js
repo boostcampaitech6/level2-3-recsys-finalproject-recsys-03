@@ -71,7 +71,7 @@ function Playlist(props) {
                         <h3 className='artist'>{song.artist}</h3>
                     </div>
                     {login &&
-                        <Play current_uri={song.uri} playlist={Playlist} device_id={DeviceId} token={Token} />
+                        <Play current_uri={song.uri} playlist={Playlist} device_id={DeviceId} />
                     }
                     <button className='remove' onClick={() => remove_song(index)}>X</button>
                 </div>
