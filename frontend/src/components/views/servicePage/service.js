@@ -69,7 +69,7 @@ function Service(props) {
             if(response.data.success){
                 console.log("succes to get playlist")
                 console.log(response.data.playlist)
-                //setPlaylist(response.data.playlist)
+                setPlaylist(response.data.playlist)
             }else{
                 console.log('fail to get playlist')
             }

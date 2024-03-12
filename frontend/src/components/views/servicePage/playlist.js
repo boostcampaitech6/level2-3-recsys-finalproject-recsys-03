@@ -12,6 +12,7 @@ function Playlist(props) {
     const login = props.login
 
     useEffect(() => {
+        
         if (login) {
             //create web player
             const script = document.createElement("script");

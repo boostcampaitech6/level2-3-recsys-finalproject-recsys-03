@@ -40,7 +40,6 @@ const create_playlist = (user_id, access_token, playlist) => {
             console.log("fail to create playlist")
         }
     }).then(data => {
-        console.log(data.id)
         add_items(data.id, access_token, playlist)
     })
 }
@@ -60,7 +59,6 @@ const get_user_id = (access_token, playlist) => {
             console.log("fail to get user_id")
         }
     }).then(data => {
-        console.log(data.id)
         create_playlist(data.id, access_token, playlist)
     })
 }
@@ -69,7 +67,6 @@ function Export(props) {
     const [Token, setToken] = useState(localStorage.getItem("accessToken"))
     const login = props.login
     let uris = props.playlist.map(song => song.uri)
-    console.log(uris)
 
     const handleClick = (event) => {
         //get user id -> create playlist -> add items
