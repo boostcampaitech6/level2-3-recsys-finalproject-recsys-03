@@ -1,4 +1,5 @@
 models/data/
+data
 backend/.env
 backend/config.py
 backend/tag_model.py

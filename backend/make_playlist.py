@@ -1,5 +1,6 @@
-from models.tag_model import recommend_songs
+#from models.tag_model import recommend_songs
 from filter import filter_model
+from tag_model import recommend_songs
 
 import pandas as pd
 from pymongo import MongoClient
