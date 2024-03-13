@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react'
+import axios from 'axios'
 
 const add_items = (playlist_id, access_token, playlist) => {
     fetch(`https://api.spotify.com/v1/playlists/${playlist_id}/tracks`, {
@@ -68,9 +69,21 @@ function Export(props) {
     const login = props.login
     let uris = props.playlist.map(song => song.uri)
 
+    const exported_items = (playlist) => {
+        axios.post('http://localhost:8000/feedback', playlist)
+        .then(response => {
+            if(response.data.success){
+                console.log("succes to save")
+            }else{
+                alert('fail to save')
+            }
+        })
+    }
+
     const handleClick = (event) => {
         //get user id -> create playlist -> add items
         get_user_id(Token, uris)
+        exported_items(props.playlist)
     }
 
     return(
