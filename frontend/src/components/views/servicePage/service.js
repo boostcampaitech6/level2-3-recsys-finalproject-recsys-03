@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import axios from 'axios'
+import { BiSolidSend } from "react-icons/bi";
 
 import NavBar from '../navBar/navBar'
 import Footer from '../footer/footer'
@@ -83,6 +84,7 @@ function Service(props) {
 
     //추천 플레이리스트 가져오기
     const getPlaylist = (chat) => {
+        console.log("get playlist")
         axios.put('http://localhost:8000/recommend', {"chat": chat})
         .then(response => {
             if(response.data.success){
@@ -113,8 +115,10 @@ function Service(props) {
                 <textarea className='enterChat'
                     onChange={handleClick}
                     value={Chat}
+                    rows={1}
+                    style={{overflow:'hidden'}}
                 />
-                <button className='chatSubmit' onClick={onSubmit}>전송</button>
+                <BiSolidSend className='chatSubmit' onClick={onSubmit} size={30}/>
             </form>
             <div className='tagList'>
                 {tag_list}

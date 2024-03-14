@@ -22,9 +22,10 @@ function Spotify_login(props) {
     return (
         <div className='login'>
             <h1>Suggestify</h1>
-            <h3>서비스 이용을 위해 스포티파이 계정으로 로그인해주세요</h3>
-            <button onClick={handleLogin}>Login</button>
-            <button onClick={guestLogin}>Guest Login</button>
+            <div className='buttons'>
+                <button onClick={handleLogin}>Login</button>
+                <button onClick={guestLogin}>Guest Login</button>
+            </div>
         </div>
     )
 }

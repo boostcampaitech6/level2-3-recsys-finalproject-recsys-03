@@ -1,5 +1,8 @@
 import React, {useEffect, useState} from 'react'
 import axios from 'axios'
+import { BiExport } from "react-icons/bi";
+
+import './infoList.css'
 
 const add_items = (playlist_id, access_token, playlist) => {
     fetch(`https://api.spotify.com/v1/playlists/${playlist_id}/tracks`, {
@@ -89,7 +92,7 @@ function Export(props) {
     return(
         <div>
             {login &&
-                <button className='save' onClick={handleClick}>Export</button>
+                <BiExport className='save' onClick={handleClick} size={30}/>
             }
         </div>
     )

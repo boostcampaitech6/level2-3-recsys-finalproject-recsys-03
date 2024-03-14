@@ -1,23 +1,21 @@
-.service_chat{
+.chats {
     display: flex;
-    flex-direction:row;
-    justify-content: left;
-    align-items: center;
-    background-color: #9290C3;
-    border: 2px solid #535C91;
-    width: fit-content;
-    border-radius: 15px;
-    margin: 15px 3px 3px 15px;
-    padding: 0px 5px 0px 5px;
+    flex-direction: column;
 }
 
 .user_chat{
     display: flex;
-    flex-direction:column;
-    justify-content: left;
-    width: fit-content;
-    margin-left: auto;
-    padding-right: 15px;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: right;
+}
+
+.sender{
+    margin: 15px 20px 0px 20px;
+    padding: 10px 0px 3px 0px;
+    color:#9290C3;
+    font-size: medium;
+    font-weight: 700;
 }
 
 .chat{
@@ -25,10 +23,11 @@
     background-color: #9290C3;
     border: 2px solid #535C91;
     border-radius: 15px;
-    margin: 15px 3px 3px 15px;
-    padding: 3px 15px;
+    margin: 0px 15px 3px 15px;
+    padding: 10px 15px;
     color: #1B1A55;
     font-weight: bolder;
+    width: fit-content;
 }
 
 .playlist_box{
@@ -38,24 +37,41 @@
     align-items: center;
     background-color: #9290C3;
     width: fit-content;
-    margin: 15px 3px 3px 15px;
+    margin: 0px 3px 3px 15px;
     padding: 0px 5px 0px 5px;
+    border-radius: 15px;
+    border: 2px solid #535C91;
 }
 
 .playlist_head{
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    width: 90%;
+    font-size: large;
     font-weight: bolder;
     color: #1B1A55;
+    margin: 7px 0px;
+}
+
+.playlist_head h2 {
+    margin: auto;
+    font-weight: 700;
+    padding: 0px 10px
 }
 
 .save{
-    margin: 7px 5px 7px 5px; 
-    padding: 3px 10px;
+    padding: 0px 20px;
+    margin: 10px 0px;
     background-color: #9290C3;
     border: none;
     color: #1B1A55;
     font-weight: bolder;
+}
+
+.save:hover{
+    color: #535C91;
 }
 
 .playlist_content{
@@ -65,44 +81,57 @@
 
 .song{
     display: flex;
-    justify-content: space-between;
-    flex-direction: row;  
+    justify-content: flex-end;
+    align-items: center;
+    flex-direction: row;
+    margin: 0px 20px;
+    border-top: 2px solid #535C91;
 }
 
 .song_info{
     display: flex;
     flex-direction: column;
-    justify-content: space-between;   
+    margin-right: auto;
 }
 
 .title{
-    margin-bottom: 0px;
+    margin: 7px 5px 0px 7px;
     padding-bottom: 0px;
     color: #1B1A55;
     font-weight: bolder;
 }
 
 .artist{
-    margin-top: 0px;
+    margin: 0px 5px 7px 7px;
     padding-top: 0px;
     color: #535C91;
     font-size: small;
 }
 
 .remove{
+    align-items: center;
     margin: 3px; 
     padding: 3px;
     background-color: #9290C3;
-    color: #535C91;
+    color: #1B1A55;
     font-weight: bolder;
     border: none;
 }
 
+.remove:hover{
+    color: #535C91;
+}
+
 .play{
-    margin: 3px; 
+    align-items: center;
+    margin: 3px 7px; 
     padding: 3px;
     background-color: #9290C3;
-    color: #535C91;
+    color: #1B1A55;
     font-weight: bolder;
     border: none;
+}
+
+.play:hover{
+    color: #535C91;
 }

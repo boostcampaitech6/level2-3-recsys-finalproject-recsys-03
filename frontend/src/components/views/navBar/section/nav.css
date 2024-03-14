@@ -1,23 +1,21 @@
 .menu {
-  width: 100%;
-  padding: 0 25px;
-  overflow: auto;
+  width: 95vw;
+  height: 10vh;
   clear: both;
-  margin: 0px;
   background-color: #070F2B !important;
 }
 
 .menu__logo {
-  width: 150px;
   float: left;
 }
 
 .menu__logo a {
   display: inline-block;
-  font-size: 22px;
+  font-size: 1.5rem;
   padding: 10px 20px;
   font-weight: bolder;
   color: #9290C3;
+  text-decoration: none;
 }
 
 .menu__container{

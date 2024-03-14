@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react'
+import { MdOutlineRemoveCircleOutline } from "react-icons/md";
+
 import Play from './play'
 import Export from './export'
+import './infoList.css'
 
 function Playlist(props) {
     const [Pause, setPause] = useState(true)
@@ -73,7 +76,7 @@ function Playlist(props) {
                     {login &&
                         <Play current_uri={song.uri} playlist={Playlist} device_id={DeviceId} />
                     }
-                    <button className='remove' onClick={() => remove_song(index)}>X</button>
+                    <MdOutlineRemoveCircleOutline className='remove' onClick={() => remove_song(index)} size={25}/>
                 </div>
             </div>
         )
@@ -82,7 +85,7 @@ function Playlist(props) {
     return(
         <div className='playlist_box'>
             <div className='playlist_head'>
-                <h2>추천된 플레이리스트</h2>
+                <h2>New Playlist</h2>
                 <Export playlist={Playlist} login={props.login}/>
             </div>
             <div className='playlist_content'>

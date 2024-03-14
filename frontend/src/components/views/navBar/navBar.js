@@ -9,12 +9,7 @@ function NavBar() {
       <div className="menu__logo">
         <a href="/service">Suggestify</a>
       </div>
-      <div className="menu_rigth">
-          <RightMenu mode="horizontal" />
-      </div>
       <br/>
-      <br/>
-      <hr/>
     </nav>
   )
 }

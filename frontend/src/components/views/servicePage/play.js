@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from 'react'
+import { MdOutlinePlayCircle } from "react-icons/md"
+import { MdOutlinePauseCircle } from "react-icons/md"
+
+import './infoList.css'
 
 const play = (uris, current_uri, id, access_token) => {
     fetch(`https://api.spotify.com/v1/me/player/play?device_id=${id}`, {
@@ -58,15 +62,11 @@ function Play(props) {
 
     if (Pause) {
         return(
-            <div>
-                <button className='play' onClick={click_play}>Play</button>
-            </div>
+            <MdOutlinePlayCircle className='play' onClick={click_play} size={25}/>
         )
     } else {
         return(
-            <div>
-                <button className='play' onClick={click_pause}>Pause</button>
-            </div>
+            <MdOutlinePauseCircle className='play' onClick={click_pause} size={25}/>
         )
     }
 }

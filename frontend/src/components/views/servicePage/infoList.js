@@ -7,24 +7,22 @@ function InfoList(props) {
     let chats = props.chats
     let playlists = props.playlists
 
-    //user chat component
-    const chat_list = chats.map((chat, index)=>{
-        return(
-            <div key={index}>
-                <h3 className='chat'>{chat}</h3>
-            </div>
-        )
-    })
-
     const recommendation = chats.map((section, index)=>{
-        console.log(props.playlists)
         return(
             <div key={index}>
-                <div>
+                <div className='user_chat'>
+                    <p className='sender'>You</p>
                     <h3 className='chat'>{chats[index]}</h3>
                 </div>
+                {props.playlists.length <= index+1 &&
+                    <div className='service_chat'>
+                        <p className='sender'>Chat</p>
+                        <h3 className='chat'>Loading...</h3>
+                    </div>
+                }
                 {props.playlists.length > index+1 &&
-                    <div>
+                    <div className='service_chat'>
+                        <p className='sender'>Chat</p>
                         <Playlist playlist={props.playlists[index+1]} login={props.login}/>
                     </div>
                 }
@@ -34,7 +32,7 @@ function InfoList(props) {
 
     
     return(
-        <div>
+        <div className='chats'>
             {recommendation}
         </div>
     )
