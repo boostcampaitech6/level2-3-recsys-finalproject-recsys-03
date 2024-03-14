@@ -96,19 +96,23 @@ async def login(token_info:Token):
             listening_collection.insert_one(listening_event)
     return JSONResponse(content={"success": True, "message": "Operation successful"})
 
-@router.post('/recommend')
+@router.put('/recommend')
 async def recommend_tag(chatRequest:ChatRequest):
     chat = chatRequest.chat
 
-    df_tags = pd.read_csv('data/tag.csv')
+    df_tags = pd.read_csv('../data/tag.csv')
     tags = df_tags.Tag
     playlist = []
-    titles, artists, uris = make_playlist(chat, tags)
-    for title, artist, uri in zip(titles, artists, uris):
-        track = Track(title=title, artist=artist, uri=uri).model_dump()
-        playlist.append(track)
-    if not titles:
-        return JSONResponse(content={"success": False, "message": "Can't get recommend result"})
+    # titles, artists, uris = make_playlist(chat, tags)
+    # for title, artist, uri in zip(titles, artists, uris):
+    #     track = Track(title=title, artist=artist, uri=uri).model_dump()
+    #     playlist.append(track)
+    # if not titles:
+    #     return JSONResponse(content={"success": False, "message": "Can't get recommend result"})
+    playlist = make_playlist(chat, tags)
+    for item in playlist:
+        item['uri'] = "spotify:track:" + item['uri']
+        
     print(playlist)
     
     return JSONResponse(content={"success": True, "playlist": playlist})
