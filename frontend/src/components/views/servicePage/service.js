@@ -24,6 +24,8 @@ function Service(props) {
     const [Playlist, setPlaylist] = useState([])
     const [Playlists, setPlaylists] = useState([])
     const [Login, setLogin] = useState(false)
+    const [UserUri, setUserUri] = useState("")
+
 
     useEffect(()=> {
         //get token and send to backend
@@ -54,6 +56,7 @@ function Service(props) {
         .then(response => {
             if(response.data.success){
                 console.log("succes to login")
+                setUserUri(response.data.uri)
             }else{
                 alert('fail to login')
             }
@@ -83,9 +86,9 @@ function Service(props) {
     })
 
     //추천 플레이리스트 가져오기
-    const getPlaylist = (chat) => {
+    const getPlaylist = (chat, user_uri) => {
         console.log("get playlist")
-        axios.put('http://localhost:8000/recommend', {"chat": chat})
+        axios.put('http://localhost:8000/recommend', {"chat": chat, "user_uri": user_uri})
         .then(response => {
             if(response.data.success){
                 console.log("succes to get playlist")
@@ -101,7 +104,7 @@ function Service(props) {
         setChatList(ChatList.concat(Chat))
         localStorage.setItem("chat", Chat)
         localStorage.setItem("chatList", ChatList)
-        getPlaylist(Chat)
+        getPlaylist(Chat, UserUri)
         setChat("")
     }
 

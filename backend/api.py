@@ -84,7 +84,7 @@ async def login(token_info:Token):
             'email': user['email'],
             'country': user['country'],
             'top_track':top_item_list,
-            'user_id':last_user['user_id'] + 1
+            #'user_id':last_user['user_id'] + 1
         }
         users_collection.insert_one(user_data)
 
@@ -94,7 +94,7 @@ async def login(token_info:Token):
                 'track_id':listening_list
             }
             listening_collection.insert_one(listening_event)
-    return JSONResponse(content={"success": True, "message": "Operation successful"})
+    return JSONResponse(content={"success": True, "message": "Operation successful", "uri" : user["id"]})
 
 @router.put('/recommend')
 async def recommend_tag(chatRequest:ChatRequest):
