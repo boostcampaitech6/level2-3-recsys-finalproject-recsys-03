@@ -43,38 +43,57 @@ async def get_spotify(url, token):
 async def login(token_info:Token):
     print(token_info.access_token)
     user = await get_spotify(url = "https://api.spotify.com/v1/me", token=token_info.access_token)
-    top_items = await get_spotify(url = "https://api.spotify.com/v1/me/top/tracks?limit=50", token=token_info.access_token)
-    top_item_list = []
-    for item in top_items['items']:
-        artists = item['artists']
-        artist_list= []
-        for artist in artists:
-            artist_list.append(artist['name'])
-        music = {
-            'artist_name':', '.join(artist_list),
-            'track_name':item['name'],
-            'uri':item['id']
-        }
-        top_item_list.append(music)
+    top_items = await get_spotify(url = "https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=50", token=token_info.access_token)
 
     # MongoDB 연결
     client = MongoClient(config.db_url)
-    db = client['my_spotify_db']
+    db = client['playlist_recommendation']
     users_collection = db['User']
+    tracks_collection = db['Track']
+    listening_collection = db['Listening Events']
 
-    user_data= {
-        'uri': user['id'],
-        'email': user['email'],
-        'country': user['country'],
-        'top_track':top_item_list
-    }
+    if not users_collection.find_one({'uri':user['id']}):
+        top_item_list = []
+        listening_list = []
+        for item in top_items['items']:
+            # artist 여러명인 경우 처리
+            artists = item['artists']
+            artist_list= []
+            for artist in artists:
+                artist_list.append(artist['name'])
+            
+            # track_id 조회
+            track = tracks_collection.find_one({'uri':item['id']})
+            track_id = -1
+            if track:
+                track_id = track['track_id']
+                listening_list.append(track_id)
 
-    # 이미 존재하는 사용자는 업데이트, 새 사용자인 경우에는 삽입
-    users_collection.update_one(
-        {'uri': user['id']},
-        {'$set': user_data},
-        upsert=True  # 사용자가 없으면 삽입
-    )
+            music = {
+                'artist_name':', '.join(artist_list),
+                'track_name':item['name'],
+                'uri':item['id'],
+                'track_id':track_id
+            }
+            top_item_list.append(music)
+        
+        last_user = listening_collection.find_one(sort=[("user_id", -1)])
+
+        user_data= {
+            'uri': user['id'],
+            'email': user['email'],
+            'country': user['country'],
+            'top_track':top_item_list,
+            'user_id':last_user['user_id'] + 1
+        }
+        users_collection.insert_one(user_data)
+
+        if len(listening_list)>0:
+            listening_event = {
+                'user_id':last_user['user_id'] + 1,
+                'track_id':listening_list
+            }
+            listening_collection.insert_one(listening_event)
     return JSONResponse(content={"success": True, "message": "Operation successful"})
 
 @router.post('/recommend')
