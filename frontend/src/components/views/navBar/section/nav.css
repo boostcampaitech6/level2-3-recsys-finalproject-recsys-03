@@ -1,0 +1,50 @@
+.menu {
+  width: 95vw;
+  height: 10vh;
+  clear: both;
+  background-color: #070F2B !important;
+}
+
+.menu__logo {
+  float: left;
+}
+
+.menu__logo a {
+  display: inline-block;
+  font-size: 1.5rem;
+  padding: 10px 20px;
+  font-weight: bolder;
+  color: #9290C3;
+  text-decoration: none;
+}
+
+.menu__container{
+  padding: 0px 15px;
+  border-bottom: none;
+}
+
+.menu_rigth {
+  float: right;
+}
+
+.menu_rigth ul {
+list-style-type: none;
+overflow: hidden;
+}
+.menu_rigth li {
+  display: inline;
+}
+.menu_rigth li a {
+  display: inline-block;
+  color: #9290C3;
+  text-align: center;
+  padding: 12px 20px;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: bold;
+}
+hr{
+  color: #9290C3;
+  border-top: 3px solid;
+  width: 98%;
+}
