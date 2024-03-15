@@ -90,9 +90,12 @@ function Export(props) {
     }
 
     return(
-        <div>
+        <div className='save_container'>
             {login &&
-                <BiExport className='save' onClick={handleClick} size={30}/>
+                <div className='save' onClick={handleClick}>
+                    <h3>PLAY ON SPOTIFY</h3>
+                    <img src="Icon.png"></img>
+                </div>
             }
         </div>
     )
