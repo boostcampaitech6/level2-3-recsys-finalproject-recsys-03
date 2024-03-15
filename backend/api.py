@@ -99,6 +99,7 @@ async def login(token_info:Token):
 @router.put('/recommend')
 async def recommend_tag(chatRequest:ChatRequest):
     chat = chatRequest.chat
+    user_uri = chatRequest.user_uri
 
     df_tags = pd.read_csv('../data/tag.csv')
     tags = df_tags.Tag
@@ -109,7 +110,7 @@ async def recommend_tag(chatRequest:ChatRequest):
     #     playlist.append(track)
     # if not titles:
     #     return JSONResponse(content={"success": False, "message": "Can't get recommend result"})
-    playlist = make_playlist(chat, tags)
+    playlist = make_playlist(chat, user_uri, tags)
     for item in playlist:
         item['uri'] = "spotify:track:" + item['uri']
         
