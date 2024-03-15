@@ -60,6 +60,7 @@ def tag_embedding(tag_list):
     tag_embedded = tag_embedded.round(4)
     return tag_embedded
 
+
 def song_embedding(sideinfo_data,tag_embedded):
     tag_embedding_dict = tag_embedded.set_index('tag').T.to_dict('dict')
     def str_to_dict(s):
@@ -95,14 +96,13 @@ def song_embedding(sideinfo_data,tag_embedded):
     return sideinfo_data
 
 
+if __name__ == "__main__":
+    sideinfo_data = pd.read_csv('./data/preprocessed_music1.csv', index_col=0)
+    tag_list = create_tag_list(sideinfo_data)
+    tag_embedded = tag_embedding(tag_list) # 3662개 : 30분
+    tag_embedded.to_csv('./data/tag_embedded.csv')
+    song_embedded = song_embedding(sideinfo_data,tag_embedded)
+    song_embedded.to_csv('./data/song_embedded.csv')
 
-sideinfo_data = pd.read_csv('./data/preprocessed_new_music.csv', index_col=0)
-tag_list = create_tag_list(sideinfo_data)
-#tag_list = tag_list[:10]
-tag_embedded = tag_embedding(tag_list) # 3662개 : 30분
-tag_embedded.to_csv('./data/tag_embedded.csv')
 
 
-tag_embedded = pd.read_csv('./data/tag_embedded.csv', index_col=0)
-song_embedded = song_embedding(sideinfo_data,tag_embedded)
-song_embedded.to_csv('./data/song_embedded.csv')
