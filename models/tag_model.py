@@ -6,14 +6,19 @@ from loguru import logger
 
 from pymongo import MongoClient
 from dotenv import load_dotenv
+import sys
 import os
 import json
+
+
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from backend.config import config
     
 # TF-IDF 벡터라이저 초기화
       
 def db_connection():
     load_dotenv()
-    client = MongoClient(os.environ.get('MONGO_URI_1'))
+    client = MongoClient(config.db_url)
 
     # 사용할 데이터베이스 선택
     db = client['playlist_recommendation']
