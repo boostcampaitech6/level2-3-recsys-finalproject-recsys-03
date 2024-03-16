@@ -63,24 +63,25 @@ function Service(props) {
         })
     }
     
-    //챗 내용 저장
-    const handleClick = (event) => {
-        setChat(event.currentTarget.value)
-    }
 
     //태그 리스트(나중에 추천 모델 연결)
     const tags = ["겨울", "인디", "잔잔한", "휴식", "팝", "이지리스닝"]
 
     //do tag based recommendation
-    const clickTag = (event) => {
-        return
+    const clickTag = (tag) => {
+        setChat(tag)
+        setChatList(ChatList.concat(tag))
+        localStorage.setItem("chat", tag)
+        localStorage.setItem("chatList", ChatList)
+        getPlaylist(tag, UserUri)
+        setChat("")
     }
 
-    //tag chat component
+    //tag recommendation
     const tag_list = tags.map((tag, index)=>{
         return (
             <div key={index}>
-                <button className='tag' onClick={clickTag}>{tag}</button>
+                <button className='tag' onClick={() => clickTag(tag)}>{tag}</button>
             </div>
         )
     })
@@ -97,6 +98,11 @@ function Service(props) {
                 console.log('fail to get playlist')
             }
         }) 
+    }
+
+    //챗 내용 저장
+    const handleClick = (event) => {
+        setChat(event.currentTarget.value)
     }
 
     const onSubmit = (event) => {
