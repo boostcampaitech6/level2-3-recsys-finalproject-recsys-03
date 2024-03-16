@@ -14,7 +14,7 @@ class GraphSAGE(nn.Module):
     def forward(self, x, edge_index):
         for i, layer in enumerate(self.layers):
             x = layer(x, edge_index)
-            if i < len(self.layers) - 1: # 마지막 레이어가 아니라면 ReLU 적용
+            if i < len(self.layers) - 1:    # 마지막 layer를 제외하고 ReLU 적용
                 x = x.relu()
         return x
 
@@ -29,12 +29,14 @@ class Model(torch.nn.Module):
         self.user_emb = nn.Embedding(num_embeddings=data['user'].num_nodes, embedding_dim=emb_dim)
         self.track_emb = nn.Embedding(num_embeddings=data['track'].num_nodes, embedding_dim=emb_dim)
         self.artist_emb = nn.Embedding(num_embeddings=data['artist'].num_nodes, embedding_dim=emb_dim)
+        self.tag_emb = nn.Embedding(num_embeddings=data['tag'].num_nodes, embedding_dim=emb_dim)
 
     def forward(self, data):
         # 학습된 임베딩 가져오기
         x_dict = {'user': self.user_emb(data['user'].node_id),
                   'track': self.track_emb(data['track'].node_id),
-                  'artist': self.artist_emb(data['artist'].node_id)}
+                  'artist': self.artist_emb(data['artist'].node_id),
+                  'tag': self.tag_emb(data['tag'].node_id)}
         # GraphSAGE 통과
         x_dict = self.encoder(x_dict, data.edge_index_dict)
         

@@ -4,7 +4,7 @@ from torch_geometric import EdgeIndex
 from torch_geometric.loader import LinkNeighborLoader
 
 from graphsage.args import parse_args
-from graphsage.data_preprocessing import load_data, train_valid_test_split, mapping_index, convert_to_graph
+from graphsage.data_preprocessing import data_preprocessing
 from graphsage.model import Model, ContrastiveLoss
 from graphsage.trainer import train, test
 from graphsage.utils import set_seed, makedirs, get_logger
@@ -18,23 +18,13 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     warnings.filterwarnings('ignore')
     
-    # 데이터 로드
-    interaction, track = load_data(args)
-    
-    # Train-Valid-Test 분할
-    train_interaction, valid_interaction, test_interaction = train_valid_test_split(interaction, args.valid_ratio, args.test_ratio)
-    
-    # 인덱싱
-    mapping_user_index, _, mapping_track_index, _, mapping_artist_index, _ = mapping_index(args, train_interaction, valid_interaction, test_interaction, track)
-    
-    # Hetero Graph Data로 변환
-    train_data, valid_data, test_data, valid_edge_index, test_edge_index = convert_to_graph(args, train_interaction, valid_interaction, test_interaction, track,
-                                                                                            mapping_user_index, mapping_track_index, mapping_artist_index)
+    # 데이터 전처리
+    train_data, valid_data, test_data, train_edge_index, valid_edge_index, test_edge_index = data_preprocessing(args)
     
     # Edge 저장
     sparse_size = (train_data['user'].num_nodes, train_data['track'].num_nodes)
     train_edge_index_eval = EdgeIndex(
-        train_data['user', 'listen', 'track'].edge_index.to(device),
+        train_edge_index.to(device),
         sparse_size=sparse_size,
     ).sort_by('row')[0]
     valid_edge_index_eval = EdgeIndex(
@@ -46,12 +36,15 @@ def main():
         sparse_size=sparse_size,
     ).sort_by('row')[0]
 
+    # DataLoader
     train_loader = LinkNeighborLoader(
         train_data,
-        num_neighbors = {('user', 'listen', 'track'): [args.n_neighbors_sampling] * args.n_layers,    # [node 당 sample 개수] * layer 개수
-                        ('track', 'sungby', 'artist'): [args.n_neighbors_sampling] * args.n_layers,
-                        ('track', 'rev_listen', 'user'): [args.n_neighbors_sampling] * args.n_layers,
-                        ('artist', 'rev_sungby', 'track'): [args.n_neighbors_sampling] * args.n_layers},
+        num_neighbors = {('user', 'listen', 'track'): [args.neighbors_sampling] * args.n_layers,    # [node 당 sample 개수] * layer 개수
+                        ('track', 'sungby', 'artist'): [args.neighbors_sampling] * args.n_layers,
+                        ('track', 'tagged', 'tag'): [args.neighbors_sampling] * args.n_layers,
+                        ('track', 'rev_listen', 'user'): [args.neighbors_sampling] * args.n_layers,
+                        ('artist', 'rev_sungby', 'track'): [args.neighbors_sampling] * args.n_layers,
+                        ('tag', 'rev_tagged', 'track'): [args.neighbors_sampling] * args.n_layers},
         edge_label_index = (('user', 'track'), train_data['user','track'].edge_index),
         neg_sampling = dict(mode='binary', amount=args.negative_sampling),
         batch_size = args.batch_size,
@@ -62,13 +55,13 @@ def main():
         pin_memory = True,
     )
 
+    # 모델 정의
     model = Model(data=train_data, emb_dim=args.embedding_dim, hidden_dim=args.hidden_dim, n_layers=args.n_layers).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
     loss = ContrastiveLoss(margin=args.margin).to(device)
 
     counter = 0
     best_val_ndcg = -1
-    
     for epoch in range(1, args.epochs+1):
         print(f'Epoch: {epoch:02d}')
         # train
@@ -91,7 +84,7 @@ def main():
             counter = 0
         else:
             counter += 1
-            if (epoch > args.min_epochs) and (counter >= args.patience):
+            if (epoch > args.min_epochs) and (counter >= args.early_stopping):
                 logger.info(f'Early stopping at Epoch {epoch:02d}')
                 break
 

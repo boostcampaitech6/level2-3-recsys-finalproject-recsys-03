@@ -16,7 +16,7 @@ def parse_args():
     parser.add_argument('--embedding_dim', default=64, type=int, help='GraphSAGE의 노드 임베딩 차원')
     parser.add_argument('--hidden_dim', default=64, type=int, help='GraphSAGE의 hidden layer 차원')
     parser.add_argument('--n_layers', default=2, type=int, help='GraphSAGE의 SAGEConv 개수')
-    parser.add_argument('--n_neighbors_sampling', default=30, type=int, help='Graph Message Passing 과정에서 이웃 노드 Sampling 개수')
+    parser.add_argument('--neighbors_sampling', default=30, type=int, help='Graph Message Passing 과정에서 이웃 노드 Sampling 개수')
     parser.add_argument('--negative_sampling', default=1, type=int, help='Negative Sampling 비율 (Positive interaction의 n배)')
     
     # 학습 파라미터
@@ -27,8 +27,8 @@ def parse_args():
     parser.add_argument('--learning_rate', default=0.001, type=float, help='Learning Rate')
     parser.add_argument('--margin', default=1, type=int, help='Contrastive Loss의 margin')
     parser.add_argument('--epochs', default=100, type=int, help='Epoch 수')
-    parser.add_argument('--min_epochs', default=50, type=int, help='최소 Epoch 수')
-    parser.add_argument('--patience', default=10, type=int, help='Validation 성능이 patience(epoch 수) 동안 향상되지 않았을 때 Early Stopping 실행')
+    parser.add_argument('--min_epochs', default=20, type=int, help='최소 Epoch 수')
+    parser.add_argument('--early_stopping', default=20, type=int, help='Validation 성능이 특정 횟수 동안 향상되지 않았을 때 Early Stopping 실행')
 
     # 추천 파라미터
     parser.add_argument('--k', default=100, type=int, help='Top@k: 추천 track 개수')

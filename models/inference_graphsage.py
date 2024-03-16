@@ -28,7 +28,7 @@ def load_data(args):
 
 def load_graph_data(args, input_data, mapping_track_index):
     # 기존 그래프 데이터 로드
-    data = torch.load(f'{args.data_dir}serving_data.pt')
+    data = torch.load(f'{args.data_dir}serving_data_{args.filename}.pt')
 
     # user-track interaction 추가
     new_user_id = int(data['user']['node_id'][-1])    # 새로운 user의 인덱스를 데이터 내의 마지막 인덱스로 배정
@@ -92,11 +92,6 @@ def inference():
     # 데이터 로드
     input_data, track, mapping_track_index, mapping_index_track = load_data(args)
     data, new_user_id = load_graph_data(args, input_data, mapping_track_index)    # 그래프 데이터 로드
-    
-    # 추천할 user가 선호하는 track 정보 출력
-    logger.info('Input Tracks')
-    input_data_info = pd.merge(pd.DataFrame(input_data, columns=['track_id']), track, how='left',on='track_id')
-    logger.info('\n'+input_data_info.to_string())
 
     # 데이터 소요 시간
     data_time = time.time()
@@ -131,10 +126,20 @@ def inference():
     recommend_list = track_indices.tolist()[0]
     recommend_list = [mapping_index_track[str(i)] for i in recommend_list]   # 인덱싱된 track을 track_id로 변환
     
+    # 추천할 user가 선호하는 track 정보 출력
+    logger.info('Input Tracks')
+    input_data_info = pd.merge(pd.DataFrame(input_data, columns=['track_id']), track, how='left',on='track_id')
+    logger.info('\n'+input_data_info.to_string())
+    
     # 추천된 track 정보 출력
     logger.info('Recommended Tracks')
     recommend_info = pd.merge(pd.DataFrame(recommend_list, columns=['track_id']), track, how='left',on='track_id')
     logger.info('\n'+recommend_info.to_string())
+    
+    # 추천된 track 중 입력 track에 있는 track 정보 출력
+    logger.info('Recommended Old Tracks')
+    old_recommend_info = recommend_info[recommend_info['track_id'].isin(input_data_info['track_id'])]
+    logger.info('\n'+old_recommend_info.to_string())
     
     # 추천된 track 중 입력 track에 없는 track 정보 출력
     logger.info('Recommended New Tracks')
