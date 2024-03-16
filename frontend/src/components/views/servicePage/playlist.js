@@ -107,7 +107,7 @@ function Playlist(props) {
                         <h3 className='artist'>{song.artist}</h3>
                     </div>
                     {login &&
-                        <Play current_uri={song.uri} playlist={Playlist} device_id={DeviceId} />
+                        <Play song_uri={song.uri} playlist={Playlist} device_id={DeviceId} current_track={CurrentTrack}/>
                     }
                     <MdOutlineRemoveCircleOutline className='remove' onClick={() => remove_song(index)} size={25}/>
                 </div>
