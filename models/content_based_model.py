@@ -5,7 +5,9 @@ import json
 
 def combining_track(login_user_data,song_embedded,top_k):
     song_embedded = song_embedded[['track_id','anger', 'disgust', 'fear', 'joy', 'neutral', 'sadness', 'surprise', 
-                    'emb_1', 'emb_2', 'emb_3', 'emb_4', 'emb_5', 'emb_6', 'emb_7']]
+                    'emb_1', 'emb_2', 'emb_3', 'emb_4', 'emb_5', 'emb_6', 'emb_7',
+                    'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness',
+                    'instrumentalness', 'liveness', 'valence', 'tempo', 'duration_ms', 'time_signature']]
     selected_data = login_user_data['track_id'][:top_k]
     selected_song = pd.DataFrame(song_embedded[song_embedded['track_id'].isin(selected_data)].iloc[:,1:].mean()).T
     return selected_song
@@ -13,12 +15,17 @@ def combining_track(login_user_data,song_embedded,top_k):
 def combining_tag(input_tags,tag_embedded):
     input_tags_list = [tag.strip() for tag in input_tags.split(',')]
     selected_song = pd.DataFrame(tag_embedded[tag_embedded['tag'].isin(input_tags_list)].iloc[:,1:].mean()).T
+    embedding_columns = ['danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness',
+                    'instrumentalness', 'liveness', 'valence', 'tempo', 'duration_ms', 'time_signature']
+    selected_song[embedding_columns]=0.5
     return selected_song
 
 def content_based_model(selected_song,song_embedded,top_k):
 
     embedding_columns = ['anger', 'disgust', 'fear', 'joy', 'neutral', 'sadness', 'surprise', 
-                    'emb_1', 'emb_2', 'emb_3', 'emb_4', 'emb_5', 'emb_6', 'emb_7']
+                    'emb_1', 'emb_2', 'emb_3', 'emb_4', 'emb_5', 'emb_6', 'emb_7',
+                    'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness',
+                    'instrumentalness', 'liveness', 'valence', 'tempo', 'duration_ms', 'time_signature']
 
     def cosine_similarity(vec1, vec2):
         dot_product = np.dot(vec1, vec2)

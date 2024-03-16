@@ -1,6 +1,7 @@
 import pandas as pd
 import ast
 import numpy as np
+from sklearn.preprocessing import MinMaxScaler
 
 
 
@@ -93,16 +94,28 @@ def song_embedding(sideinfo_data,tag_embedded):
     for emotion in emotion_columns:
         sideinfo_data[emotion] = sideinfo_data.apply(average_tag_embedding, axis=1)[emotion]
 
+    
+
     return sideinfo_data
+
+def scaling(song_embedded):
+    columns_embedded = ['anger', 'disgust', 'fear', 'joy', 'neutral', 'sadness', 'surprise', 
+                'emb_1', 'emb_2', 'emb_3', 'emb_4', 'emb_5', 'emb_6', 'emb_7' ,'danceability', 'energy', 'key', 'loudness', 
+                'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo', 'duration_ms', 'time_signature',]                       
+    scaler = MinMaxScaler()
+    song_embedded[columns_embedded] = scaler.fit_transform(song_embedded[columns_embedded]).round(4)
+    return song_embedded
 
 
 if __name__ == "__main__":
-    sideinfo_data = pd.read_csv('./data/preprocessed_music1.csv', index_col=0)
+    sideinfo_data = pd.read_csv('../data/preprocessed_music2.csv', index_col=0)
     tag_list = create_tag_list(sideinfo_data)
     tag_embedded = tag_embedding(tag_list) # 3662개 : 30분
-    tag_embedded.to_csv('./data/tag_embedded.csv')
+    tag_embedded.to_csv('../data/tag_embedded.csv')
     song_embedded = song_embedding(sideinfo_data,tag_embedded)
-    song_embedded.to_csv('./data/song_embedded.csv')
+    song_embedded = scaling(song_embedded)
+    song_embedded.to_csv('../data/song_embedded.csv')
+
 
 
 
