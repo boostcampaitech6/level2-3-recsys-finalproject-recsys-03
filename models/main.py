@@ -16,7 +16,7 @@ def load_data():
         ]
     }
     song_embedded = pd.read_csv('../data/song_embedded.csv', index_col=0)
-    sideinfo_data = pd.read_csv('../data/preprocessed_music1.csv', index_col=0)
+    sideinfo_data = pd.read_csv('../data/preprocessed_music2.csv', index_col=0)
     input_tags = "driving, party, upbeat, summer, electronic"
     tag_embedded = pd.read_csv('../data/tag_embedded.csv', index_col=0)
     return login_user_data, song_embedded, sideinfo_data, input_tags, tag_embedded
