@@ -20,4 +20,4 @@ class recommendResponse(BaseModel):
     music:list[Track]
 
 class User(BaseModel):
-    user_id: int
+    user_uri: str

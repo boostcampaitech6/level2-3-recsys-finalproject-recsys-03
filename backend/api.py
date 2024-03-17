@@ -100,9 +100,9 @@ async def login(token_info:Token):
 
 @router.put('/tags')
 async def recommend_displayed_tags(user: User):
-    user_id = user.user_id
+    user_uri = user.user_uri
     # 비회원인 경우
-    if not user_id:
+    if user_uri == "":
         tag_list = ["kpop", "pop", "energetic", "sadness", "00s", "singer songwriter", "piano"]
     else:
         # MongoDB 연결
@@ -111,7 +111,7 @@ async def recommend_displayed_tags(user: User):
         users_collection = db['User']
         tracks_collection = db['Track']
         
-        user_collection = users_collection.find_one({'user_id':user_id})
+        user_collection = users_collection.find_one({'uri':user_uri})
         top_items = user_collection["top_track"]
         existed_top_items = []
         for item in top_items:
@@ -128,7 +128,7 @@ async def recommend_displayed_tags(user: User):
                     else:
                         tag_counter[tag] = 1
             tag_sorted = dict(sorted(tag_counter.items(), key=lambda item: item[1], reverse=True))
-            tag_list = list(tag_sorted.keys()[:7])
+            tag_list = list(tag_sorted.keys())[:7]
         else:
             tag_list = ["kpop", "pop", "energetic", "sadness", "00s", "singer songwriter", "piano"]
         
@@ -157,9 +157,9 @@ async def recommend_displayed_tags(user: User):
     data = response.json()
     
     if data["cod"] == 200:
-        if data['weather']['main'] == 'Rain':
+        if data['weather'][0]['main'] == 'Rain':
             tag_list += ['rainy day']
-        elif data['weather']['main'] == 'Snow':
+        elif data['weather'][0]['main'] == 'Snow':
             tag_list += ['snow']
     return JSONResponse(content={"success": True, "tag_list": tag_list})
     
@@ -168,7 +168,7 @@ async def recommend_tag(chatRequest:ChatRequest):
     chat = chatRequest.chat
     user_uri = chatRequest.user_uri
 
-    df_tags = pd.read_csv('../data/tag.csv')
+    df_tags = pd.read_csv('../data/tag.csv') #error!! 어느 tag랑 연결해야돼??
     tags = df_tags.Tag
     playlist = []
     # titles, artists, uris = make_playlist(chat, tags)
