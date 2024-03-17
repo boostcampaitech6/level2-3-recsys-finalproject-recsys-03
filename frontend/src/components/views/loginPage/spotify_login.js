@@ -23,7 +23,7 @@ function Spotify_login(props) {
         <div className='login'>
             <h1>Suggestify</h1>
             <div className='buttons'>
-                <button onClick={handleLogin}>Login</button>
+                <button onClick={handleLogin}>Login with Spotify</button>
                 <button onClick={guestLogin}>Guest Login</button>
             </div>
         </div>

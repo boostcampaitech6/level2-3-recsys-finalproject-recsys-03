@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react'
 import axios from 'axios'
-import { BiExport } from "react-icons/bi";
 
 import './infoList.css'
 
@@ -18,6 +17,8 @@ const add_items = (playlist_id, access_token, playlist) => {
     }).then(response => {
         if(response.ok){
             console.log("success to add items")
+            //alert("saved the new playlist!")
+            alert("새로운 플레이리스트가 추가되었습니다!")
         }else{
             console.log("fail to add items")
         }
@@ -71,28 +72,32 @@ function Export(props) {
     const [Token, setToken] = useState(localStorage.getItem("accessToken"))
     const login = props.login
     let uris = props.playlist.map(song => song.uri)
-
-    const exported_items = (playlist) => {
-        axios.post('http://localhost:8000/feedback', playlist)
-        .then(response => {
-            if(response.data.success){
-                console.log("succes to save")
-            }else{
-                alert('fail to save')
-            }
-        })
-    }
+    
+    //추후 implicit feedback 받기
+    // const exported_items = (playlist) => {
+    //     axios.post('http://localhost:8000/feedback', playlist)
+    //     .then(response => {
+    //         if(response.data.success){
+    //             console.log("succes to save")
+    //         }else{
+    //             alert('fail to save')
+    //         }
+    //     })
+    // }
 
     const handleClick = (event) => {
         //get user id -> create playlist -> add items
         get_user_id(Token, uris)
-        exported_items(props.playlist)
+        //exported_items(props.playlist)
     }
 
     return(
-        <div>
+        <div className='save_container'>
             {login &&
-                <BiExport className='save' onClick={handleClick} size={30}/>
+                <div className='save' onClick={handleClick}>
+                    <h3>PLAY ON SPOTIFY</h3>
+                    <img src="./white_icon.png"></img>
+                </div>
             }
         </div>
     )

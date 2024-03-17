@@ -26,6 +26,11 @@ function InfoList(props) {
                         <Playlist playlist={props.playlists[index+1]} login={props.login}/>
                     </div>
                 }
+                {(props.playlists.length > index+1 && !props.login) &&
+                        <div className='service_chat'>
+                            <h3 className='chat'>개인화 추천과 더 많은 서비스 이용을 위해 스포티파이 계정으로 로그인 해주세요!</h3>
+                        </div>
+                    }
             </div>
         )
     })

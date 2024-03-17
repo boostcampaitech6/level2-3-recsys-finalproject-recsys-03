@@ -7,7 +7,7 @@ function NavBar() {
   return (
     <nav className="menu" >
       <div className="menu__logo">
-        <a href="/service">Suggestify</a>
+        <a href="/">Suggestify</a>
       </div>
       <br/>
     </nav>
