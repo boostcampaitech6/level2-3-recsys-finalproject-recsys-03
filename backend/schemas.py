@@ -18,3 +18,6 @@ class Track(BaseModel):
 class recommendResponse(BaseModel):
     success:bool
     music:list[Track]
+
+class User(BaseModel):
+    user_id: int

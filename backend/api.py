@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from config import config
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from pymongo import MongoClient 
-from schemas import Token, ChatRequest, Track
+from schemas import Token, ChatRequest, Track, User
 from make_playlist import make_playlist
 import pandas as pd
 from httpx import AsyncClient
@@ -99,7 +99,8 @@ async def login(token_info:Token):
     return JSONResponse(content={"success": True, "message": "Operation successful", "uri" : user["id"]})
 
 @router.put('/tags')
-async def recommend_displayed_tags(user_id: int):
+async def recommend_displayed_tags(user: User):
+    user_id = user.user_id
     # 비회원인 경우
     if not user_id:
         tag_list = ["kpop", "pop", "energetic", "sadness", "00s", "singer songwriter", "piano"]
