@@ -7,6 +7,7 @@ from schemas import Token, ChatRequest, Track
 from make_playlist import make_playlist
 import pandas as pd
 from httpx import AsyncClient
+import time
 
 router = APIRouter()
 
@@ -98,12 +99,12 @@ async def login(token_info:Token):
 
 @router.put('/recommend')
 async def recommend_tag(chatRequest:ChatRequest):
+    start = time.time()
     chat = chatRequest.chat
     user_uri = chatRequest.user_uri
 
-    df_tags = pd.read_csv('../data/tag.csv')
-    tags = df_tags.Tag
-    playlist = []
+    df_tags = pd.read_csv('../data/tag_list.csv')
+    tags = df_tags.tag
     # titles, artists, uris = make_playlist(chat, tags)
     # for title, artist, uri in zip(titles, artists, uris):
     #     track = Track(title=title, artist=artist, uri=uri).model_dump()
@@ -114,8 +115,9 @@ async def recommend_tag(chatRequest:ChatRequest):
     for item in playlist:
         item['uri'] = "spotify:track:" + item['uri']
         
-    print(playlist)
-    
+    # print(playlist)
+    end = time.time()
+    print(f"{end - start:.5f} sec")
     return JSONResponse(content={"success": True, "playlist": playlist})
 
 # TODO test

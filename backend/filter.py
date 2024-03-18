@@ -1,5 +1,4 @@
 import ast
-from dotenv import load_dotenv
 import os
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
@@ -10,10 +9,37 @@ from config import config
 # tags = ['사랑', '고통', '의도', '위로', '진실', '솔직함', '고난', '자아성찰', '자기계발', '희망']
 
 def filter_model(question, tag_list):
-    load_dotenv()
     llm = ChatOpenAI(openai_api_key=config.open_ai_api_key)
+    
+    # print("taglist")
+    # print(tag_list)
+    # print(type(tag_list))
+    
+    '''
+    promt_message_1 = """ 1. You'll be a tag extractor extracting tags from sentences or words. I'll give you a list of tag candidates to choose from. 
+    """
+    promt_message_2 = str(tag_list[:1000].tolist())
+    print(promt_message_2)
+    promt_message_3 = """
+    2. I'll give you a sentence written by a person, then you read it and choose the 5 tags that best matches the speaker's situation, emotion, mood, and context from the list above. 
+    3. If you receive a tag or a word, make sure that the tag is included.
+    4. You can choose 5 tags, and make sure you return them in the form of Python's list!
+    """
+    prompt_message = 
+    '''
+    
+    propmt_message_1 =  """ 1. 당신은 문장이나 단어에서 태그를 추출하는 태그 추출기가 됩니다. 선택할 수 있는 태그 후보 맨 아래에 드리겠습니다.
+    2. 사람이 쓴 문장을 드릴 테니 읽어보시고, 태그 후보 목록에서 화자의 상황, 감정, 기분, 맥락에 가장 잘 맞는 5개의 태그를 고르시면 됩니다.
+    3. 태그나 단어를 받은 경우, 반드시 결과물에 태그가 포함되어 있어야 합니다.
+    4. 5개의 태그를 선택할 수 있으며 반드시 파이썬의 List 형태로 반환해야 합니다!
+    """
+    propmt_message_2 = str(tag_list)
+    # 너는 사람이 입력한 문장을 읽고 난 뒤에, 문장의 상황과 감정, 분위기에 가장 어울리는 Tag를 뒤에 내가 주는 리스트에서 5개 정도 골라서 나한테 'python의 리스트 형태'로 돌려주면 돼." + str(tag_list)
+    
+    # print(tag_list)
+    
     prompt = ChatPromptTemplate.from_messages([
-        ("system", "너는 사람이 입력한 문장을 읽고 난 뒤에, 문장의 상황과 감정, 분위기에 가장 어울리는 Tag를 뒤에 내가 주는 리스트에서 5개 정도 골라서 나한테 'python의 리스트 형태'로 돌려주면 돼." + str(tag_list)),
+        ("system", propmt_message_1 + propmt_message_2),
         ("user", "{input}")
     ])
     
