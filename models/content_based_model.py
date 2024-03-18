@@ -2,6 +2,8 @@
 import pandas as pd
 import numpy as np
 import json
+import time
+
 
 def combining_track(login_user_data,song_embedded,top_k):
     song_embedded = song_embedded[['track_id','anger', 'disgust', 'fear', 'joy', 'neutral', 'sadness', 'surprise', 
@@ -21,7 +23,6 @@ def combining_tag(input_tags,tag_embedded):
     return selected_song
 
 def content_based_model(selected_song,song_embedded,top_k):
-
     embedding_columns = ['anger', 'disgust', 'fear', 'joy', 'neutral', 'sadness', 'surprise', 
                     'emb_1', 'emb_2', 'emb_3', 'emb_4', 'emb_5', 'emb_6', 'emb_7',
                     'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness',
