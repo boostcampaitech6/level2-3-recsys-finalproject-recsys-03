@@ -1,25 +1,26 @@
 .login{
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    justify-content: left;
+    align-items: left;
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -70%);
+    transform: translate(-50%, -60%);
 }
 
 .buttons {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: left;
+    margin-left: 10px;
 }
 
 .login button {
     display: flex;
     align-items:center;
     border-radius: 20px;
-    margin: 0px 10px; 
+    margin: 0px 20px 0px 0px; 
     padding: 3px 15px;
     background-color: #9290C3;
     border: 2px solid #535C91;
@@ -29,8 +30,24 @@
 }
 
 .login h1{
-    font-size: 10rem;
-    font-weight: 900;
+    font-size: 9rem;
+    font-weight: 800;
     color: #9290C3;
-    line-height: 5rem;
+    line-height: 4rem;
+    white-space: nowrap;
+    margin: 3rem 10px;
+}
+
+.login h3{
+    font-size: 3rem;
+    font-weight: 800;
+    color: #535C91;
+    margin: 0px 10px 0px 10px;
+}
+
+.login p{
+    font-size: 1rem;
+    color: #535C91;
+    margin: 0px 10px 20px 10px;
+    width: 70%;
 }

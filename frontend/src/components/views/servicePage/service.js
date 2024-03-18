@@ -6,6 +6,7 @@ import NavBar from '../navBar/navBar'
 import Footer from '../footer/footer'
 import InfoList from './infoList'
 import './service.css'
+import { redirect } from 'react-router-dom';
 
 const getReturnedParam = (hash) => {
     const strAfterHash = hash.substring(1)
@@ -25,6 +26,7 @@ function Service(props) {
     const [Playlists, setPlaylists] = useState([])
     const [Login, setLogin] = useState(false)
     const [UserUri, setUserUri] = useState("")
+    const [Tags, setTags] = useState([])
 
 
     useEffect(()=> {
@@ -43,6 +45,7 @@ function Service(props) {
             setLogin(true)
         } else {
             console.log("guest login")
+            getTags(UserUri)
         }
     }, [])
 
@@ -57,15 +60,28 @@ function Service(props) {
             if(response.data.success){
                 console.log("succes to login")
                 setUserUri(response.data.uri)
+                getTags(response.data.uri)
             }else{
                 alert('fail to login')
+                redirect('/')
             }
         })
     }
     
 
-    //태그 리스트(나중에 추천 모델 연결)
-    const tags = ["겨울", "인디", "잔잔한", "휴식", "팝", "이지리스닝"]
+    //get tag list
+    const getTags = (user_uri) => {
+        axios.put('http://localhost:8000/tags', {"user_uri": user_uri})
+        .then(response => {
+            if(response.data.success){
+                console.log("succes to get tags")
+                console.log(response.data.tag_list)
+                setTags(response.data.tag_list)
+            }else{
+                console.log('fail to get tags')
+            }
+        })
+    }
 
     //do tag based recommendation
     const clickTag = (tag) => {
@@ -78,7 +94,7 @@ function Service(props) {
     }
 
     //tag recommendation
-    const tag_list = tags.map((tag, index)=>{
+    const tag_list = Tags.map((tag, index)=>{
         return (
             <div key={index}>
                 <button className='tag' onClick={() => clickTag(tag)}>{tag}</button>
@@ -118,7 +134,7 @@ function Service(props) {
         <div className='page'>
             <NavBar />
             <div className='chatbox'>
-                <InfoList tags={tags} chats={ChatList} playlists={Playlists} login={Login}/>
+                <InfoList tags={Tags} chats={ChatList} playlists={Playlists} login={Login}/>
             </div>
             <form onSubmit={onSubmit} className='chatform'>
                 <textarea className='enterChat'

@@ -3,11 +3,14 @@ from fastapi.responses import JSONResponse
 from config import config
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from pymongo import MongoClient 
-from schemas import Token, ChatRequest, Track
+from schemas import Token, ChatRequest, Track, User
 from make_playlist import make_playlist
 import pandas as pd
 from httpx import AsyncClient
+from datetime import datetime
+import requests
 import time
+
 
 router = APIRouter()
 
@@ -39,7 +42,7 @@ async def get_spotify(url, token):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail="Could not fetch Spotify API")
     return response.json()
-
+            
 @router.post('/login', status_code=201)
 async def login(token_info:Token):
     print(token_info.access_token)
@@ -97,6 +100,71 @@ async def login(token_info:Token):
             listening_collection.insert_one(listening_event)
     return JSONResponse(content={"success": True, "message": "Operation successful", "uri" : user["id"]})
 
+@router.put('/tags')
+async def recommend_displayed_tags(user: User):
+    user_uri = user.user_uri
+    # 비회원인 경우
+    if user_uri == "":
+        tag_list = ["kpop", "pop", "energetic", "sadness", "00s", "singer songwriter", "piano"]
+    else:
+        # MongoDB 연결
+        client = MongoClient(config.db_url)
+        db = client['playlist_recommendation']
+        users_collection = db['User']
+        tracks_collection = db['Track']
+        
+        user_collection = users_collection.find_one({'uri':user_uri})
+        top_items = user_collection["top_track"]
+        existed_top_items = []
+        for item in top_items:
+            if item['track_id'] != -1:
+                existed_top_items.append(item['track_id'])
+                
+        if len(existed_top_items)>=10:
+            tag_counter = dict()
+            for item in existed_top_items:
+                track = tracks_collection.find_one({'track_id':item})
+                for tag in track["tags"]:
+                    if tag in tag_counter.keys():
+                        tag_counter[tag] += 1
+                    else:
+                        tag_counter[tag] = 1
+            tag_sorted = dict(sorted(tag_counter.items(), key=lambda item: item[1], reverse=True))
+            tag_list = list(tag_sorted.keys())[:7]
+        else:
+            tag_list = ["kpop", "pop", "energetic", "sadness", "00s", "singer songwriter", "piano"]
+        
+    # 현재 월, 시간, 날씨를 기반으로 태그 추천
+    now = datetime.now()
+    if now.month>=3 and now.month<=5:
+        tag_list += ['spring']
+    elif now.month>=6 and now.month<=8:
+        tag_list += ['summer']
+    elif now.month>=9 and now.month<=10:
+        tag_list += ['autumn']
+    else:
+        tag_list += ['winter']
+        
+    if now.hour>=6 and now.hour<=9:
+        if now.hour<=7:
+            tag_list += ['wake up']
+        tag_list += ['morning']
+    elif now.hour in [22, 23, 0, 1]:
+        tag_list += ['night']
+    
+    api_key = config.weathermap_api_key
+    city = "Seoul"
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}"
+    response = requests.get(url)
+    data = response.json()
+    
+    if data["cod"] == 200:
+        if data['weather'][0]['main'] == 'Rain':
+            tag_list += ['rainy day']
+        elif data['weather'][0]['main'] == 'Snow':
+            tag_list += ['snow']
+    return JSONResponse(content={"success": True, "tag_list": tag_list})
+    
 @router.put('/recommend')
 async def recommend_tag(chatRequest:ChatRequest):
     start = time.time()
@@ -104,7 +172,9 @@ async def recommend_tag(chatRequest:ChatRequest):
     user_uri = chatRequest.user_uri
 
     df_tags = pd.read_csv('../data/tag_list.csv')
+    # 최종적으로 올린 23000개 tag_list로 일단 작업해두겠습니당 (SBK)
     tags = df_tags.tag
+
     # titles, artists, uris = make_playlist(chat, tags)
     # for title, artist, uri in zip(titles, artists, uris):
     #     track = Track(title=title, artist=artist, uri=uri).model_dump()
