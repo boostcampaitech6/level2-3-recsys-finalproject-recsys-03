@@ -21,7 +21,12 @@ function Spotify_login(props) {
 
     return (
         <div className='login'>
-            <h1>Suggestify</h1>
+            <h1>Au-Dionysos</h1>
+            <h3>Don't ruin my mood!</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, 
+                sed do eiusmod tempor incididunt ut labore et dolore magna 
+                aliqua. Ut enim ad minim veniam, quis nostrud exercitation 
+                ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
             <div className='buttons'>
                 <button onClick={handleLogin}>Login with Spotify</button>
                 <button onClick={guestLogin}>Guest Login</button>

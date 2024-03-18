@@ -49,12 +49,6 @@
 }
 
 .chatSubmit{
-    /*border-radius: 15px;
-    background-color: #9290C3;
-    border: 2px solid #535C91;
-    color: #1B1A55;
-    font-size: large;
-    font-weight: bolder;*/
     color: #9290C3;
 }
 
@@ -69,12 +63,12 @@
 
 .tag {
     border-radius: 15px;
-    margin: 7px 5px 7px 5px; 
-    padding: 3px 10px;
+    margin: 7px 3px; 
+    padding: 0.5px 10px;
     background-color: #9290C3;
     border: 2px solid #535C91;
     color: #1B1A55;
-    font-size: medium;
+    font-size: 1rem;
     font-weight: bolder;
 }
 

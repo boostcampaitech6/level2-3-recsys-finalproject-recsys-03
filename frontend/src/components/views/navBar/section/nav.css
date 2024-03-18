@@ -7,15 +7,22 @@
 
 .menu__logo {
   float: left;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .menu__logo a {
-  display: inline-block;
   font-size: 1.5rem;
-  padding: 10px 20px;
+  padding: 5px 0px 10px 10px;
   font-weight: bolder;
   color: #9290C3;
   text-decoration: none;
+}
+
+.menu__logo img {
+  width: 45px;
+  height: 45px;
 }
 
 .menu__container{
