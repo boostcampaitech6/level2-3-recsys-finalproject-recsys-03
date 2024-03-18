@@ -26,33 +26,105 @@ class Model(torch.nn.Module):
         self.encoder = GraphSAGE(hidden_dim, n_layers)
         self.encoder = to_hetero(self.encoder, data.metadata(), aggr='mean')
 
-        self.user_emb = nn.Embedding(num_embeddings=data['user'].num_nodes, embedding_dim=emb_dim)
-        self.track_emb = nn.Embedding(num_embeddings=data['track'].num_nodes, embedding_dim=emb_dim)
-        self.artist_emb = nn.Embedding(num_embeddings=data['artist'].num_nodes, embedding_dim=emb_dim)
-        self.tag_emb = nn.Embedding(num_embeddings=data['tag'].num_nodes, embedding_dim=emb_dim)
+        # 임베딩 초기값 설정 (특성 정보가 없는 경우, 임의로 초기값 설정)
+        if hasattr(data['user'], 'x'):
+            self.user_emb = nn.Embedding(num_embeddings=data['user'].num_nodes, embedding_dim=emb_dim/2)
+            self.track_emb = nn.Embedding(num_embeddings=data['track'].num_nodes, embedding_dim=emb_dim/2)
+            self.artist_emb = nn.Embedding(num_embeddings=data['artist'].num_nodes, embedding_dim=emb_dim/2)
+            self.tag_emb = nn.Embedding(num_embeddings=data['tag'].num_nodes, embedding_dim=emb_dim/2)
+            
+            self.user_feature_transform = nn.Linear(12, emb_dim/2)
+            self.track_feature_transform = nn.Linear(12, emb_dim/2)
+            self.artist_feature_transform = nn.Linear(12, emb_dim/2)
+            self.tag_feature_transform = nn.Linear(14, emb_dim/2)
+        
+        else:
+            self.user_emb = nn.Embedding(num_embeddings=data['user'].num_nodes, embedding_dim=emb_dim)
+            self.track_emb = nn.Embedding(num_embeddings=data['track'].num_nodes, embedding_dim=emb_dim)
+            self.artist_emb = nn.Embedding(num_embeddings=data['artist'].num_nodes, embedding_dim=emb_dim)
+            self.tag_emb = nn.Embedding(num_embeddings=data['tag'].num_nodes, embedding_dim=emb_dim)
 
     def forward(self, data):
         # 학습된 임베딩 가져오기
-        x_dict = {'user': self.user_emb(data['user'].node_id),
-                  'track': self.track_emb(data['track'].node_id),
-                  'artist': self.artist_emb(data['artist'].node_id),
-                  'tag': self.tag_emb(data['tag'].node_id)}
+        user_emb = self.user_emb(data['user'].node_id)
+        track_emb = self.track_emb(data['track'].node_id)
+        artist_emb = self.artist_emb(data['artist'].node_id)
+        tag_emb = self.tag_emb(data['tag'].node_id)
+        
+        if hasattr(data['user'], 'x'):
+            user_features = F.relu(self.user_feature_transform(data['user'].x))
+            track_features = F.relu(self.track_feature_transform(data['track'].x))
+            artist_features = F.relu(self.artist_feature_transform(data['artist'].x))
+            tag_features = F.relu(self.tag_feature_transform(data['tag'].x))
+            
+            user_emb = torch.cat([user_emb, user_features], dim=1)
+            track_emb = torch.cat([track_emb, track_features], dim=1)
+            artist_emb = torch.cat([artist_emb, artist_features], dim=1)
+            tag_emb = torch.cat([tag_emb, tag_features], dim=1)
+        
+        # 임베딩 딕셔너리
+        x_dict = {'user': user_emb,
+                  'track': track_emb,
+                  'tag': tag_emb,
+                  'artist': artist_emb}
+        
         # GraphSAGE 통과
         x_dict = self.encoder(x_dict, data.edge_index_dict)
         
         return x_dict
 
 
+class Model(torch.nn.Module):
+    def __init__(self, data, emb_dim, hidden_dim, n_layers):
+        super().__init__()
+        self.data = data
+        self.encoder = GraphSAGE(hidden_dim, n_layers)
+        self.encoder = to_hetero(self.encoder, data.metadata(), aggr='mean')
+
+        self.user_emb = nn.Embedding(num_embeddings=data['user'].num_nodes, embedding_dim=emb_dim)
+        self.track_emb = nn.Embedding(num_embeddings=data['track'].num_nodes, embedding_dim=emb_dim)
+        self.tag_emb = nn.Embedding(num_embeddings=data['tag'].num_nodes, embedding_dim=emb_dim)
+        self.artist_emb = nn.Embedding(num_embeddings=data['artist'].num_nodes, embedding_dim=emb_dim)
+
+        # 특성값을 처리하기 위한 Linear layer
+        self.user_feature_transform = nn.Linear(12, emb_dim)
+        self.track_feature_transform = nn.Linear(12, emb_dim)
+        self.tag_feature_transform = nn.Linear(14, emb_dim)
+        self.artist_feature_transform = nn.Linear(12, emb_dim)
+
+    def forward(self, data):
+        # 임베딩 가져오기
+        user_emb = self.user_emb(data['user'].node_id)
+        track_emb = self.track_emb(data['track'].node_id)
+        tag_emb = self.tag_emb(data['tag'].node_id)
+        artist_emb = self.artist_emb(data['artist'].node_id)
+
+        # 특성값 처리 (예시: 'user'에 대해서만)
+        if hasattr(data['user'], 'x'):
+            user_features = F.relu(self.user_feature_transform(data['user'].x))
+            # 여기서 user_emb와 user_features를 적절히 조합할 수 있습니다.
+            # 예: user_emb = torch.cat([user_emb, user_features], dim=1)
+
+        # GraphSAGE 통과
+        x_dict = {'user': user_emb, 'track': track_emb, 'artist': artist_emb, 'tag': tag_emb}
+        x_dict = self.encoder(x_dict, data.edge_index_dict)
+        
+        return x_dict
+
+
+
+
 # Contrastive Loss : positive 쌍의 임베딩은 서로 가깝게, negative 쌍의 임베딩은 서로 멀어지게 학습
 class ContrastiveLoss(nn.Module):
-    def __init__(self, margin):
+    def __init__(self, margin, negative_sampling):
         super(ContrastiveLoss, self).__init__()
         self.margin = margin    # margin : positive와 negative 쌍 사이의 최소 거리
+        self.negative_sampling = negative_sampling
 
-    def forward(self, user_emb, track_emb):
+    def forward(self, edge_head_emb, edge_tail_emb):
         # Euclidean distance 계산
-        pos_neg_split = user_emb.size(0)//2    # embedding은 pos_edge와 neg_edge가 1:1 비율로 존재
-        pos_distance = F.pairwise_distance(user_emb[:pos_neg_split], track_emb[:pos_neg_split], keepdim=True)
-        neg_distance = F.pairwise_distance(user_emb[pos_neg_split:], track_emb[pos_neg_split:], keepdim=True)
+        pos_neg_split = edge_head_emb.size(0)//(1 + self.negative_sampling)    # embedding은 pos_edge와 neg_edge가 1:1 비율로 존재
+        pos_distance = F.pairwise_distance(edge_head_emb[:pos_neg_split], edge_tail_emb[:pos_neg_split], keepdim=True)
+        neg_distance = F.pairwise_distance(edge_head_emb[pos_neg_split:], edge_tail_emb[pos_neg_split:], keepdim=True)
         losses = torch.relu(self.margin + pos_distance - neg_distance)
         return losses.mean()

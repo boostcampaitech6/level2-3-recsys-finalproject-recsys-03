@@ -8,8 +8,10 @@ def parse_args():
     parser.add_argument('--data_dir', default='../data/', type=str, help='data 폴더 경로')
     parser.add_argument('--log_dir', default='./log/', type=str, help='log 폴더 경로')
     parser.add_argument('--model_dir', default='./model/', type=str, help='model 폴더 경로')
-    parser.add_argument('--interaction_filename', default='interaction.json', type=str, help='interaction 파일명 (json 형식)')
-    parser.add_argument('--track_filename', default='track.csv', type=str, help='interaction 파일명 (csv 형식)')
+    parser.add_argument('--user_filename', default='user_emb.csv', type=str, help='user 파일명 (csv 형식)')
+    parser.add_argument('--track_filename', default='track_emb.csv', type=str, help='track 파일명 (csv 형식)')
+    parser.add_argument('--artist_filename', default='artist_emb.csv', type=str, help='artist 파일명 (csv 형식)')
+    parser.add_argument('--tag_filename', default='tag_emb.csv', type=str, help='tag 파일명 (csv 형식)')
     parser.add_argument('--filename', default='graphsage', type=str, help='생성되는 파일명 (형식 자동 지정)')
 
     # 모델 파라미터
