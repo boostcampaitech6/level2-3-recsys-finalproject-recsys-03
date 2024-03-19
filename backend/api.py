@@ -9,6 +9,8 @@ import pandas as pd
 from httpx import AsyncClient
 from datetime import datetime
 import requests
+import time
+
 
 router = APIRouter()
 
@@ -165,12 +167,14 @@ async def recommend_displayed_tags(user: User):
     
 @router.put('/recommend')
 async def recommend_tag(chatRequest:ChatRequest):
+    start = time.time()
     chat = chatRequest.chat
     user_uri = chatRequest.user_uri
 
-    df_tags = pd.read_csv('../data/tag.csv') #error!! 어느 tag랑 연결해야돼??
-    tags = df_tags.Tag
-    playlist = []
+    df_tags = pd.read_csv('../data/tag_list.csv')
+    # 최종적으로 올린 23000개 tag_list로 일단 작업해두겠습니당 (SBK)
+    tags = df_tags.tag
+
     # titles, artists, uris = make_playlist(chat, tags)
     # for title, artist, uri in zip(titles, artists, uris):
     #     track = Track(title=title, artist=artist, uri=uri).model_dump()
@@ -181,8 +185,9 @@ async def recommend_tag(chatRequest:ChatRequest):
     for item in playlist:
         item['uri'] = "spotify:track:" + item['uri']
         
-    print(playlist)
-    
+    # print(playlist)
+    end = time.time()
+    print(f"{end - start:.5f} sec")
     return JSONResponse(content={"success": True, "playlist": playlist})
 
 # TODO test
