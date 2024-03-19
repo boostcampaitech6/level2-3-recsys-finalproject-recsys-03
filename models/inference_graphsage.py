@@ -4,9 +4,9 @@ import pandas as pd
 import torch
 from torch_geometric.transforms import ToUndirected
 from torch_geometric.nn import MIPSKNNIndex
-from graphsage.args import parse_args
-from graphsage.utils import get_logger
-from graphsage.model import Model
+from models.graphsage.args import parse_args
+from models.graphsage.utils import get_logger
+from models.graphsage.model import Model
 
 
 def load_user_data(args):
@@ -46,7 +46,7 @@ def load_graph_data(args, input_data, mapping_track_index):
     return data, new_user_id
 
 
-def inference(input_data, k=20):
+def inference_graphsage(input_data, k=20):
     # 기본 설정
     start_time = time.time()    # inference 소요 시간 계산
     args = parse_args()    # 파라미터 로드
@@ -127,7 +127,7 @@ def inference(input_data, k=20):
 def main():
     args = parse_args()
     input_data = load_user_data(args)
-    _ = inference(input_data, k=args.k)
+    _ = inference_graphsage(input_data, k=args.k)
 
 
 if __name__ == '__main__':
