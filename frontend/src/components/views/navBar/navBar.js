@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import RightMenu from './section/rightMenu';
+// import React, { useState } from 'react';
+// import RightMenu from './section/rightMenu';
 import './section/nav.css';
+import logo from "../../images/logo_extract.png";
 
 function NavBar() {
   //frontend/src/components/views/navBar/navBar.js
@@ -10,11 +11,11 @@ function NavBar() {
     <nav className="menu" >
       <div className="menu__logo">
         <a href="/">Au-Dionysos</a>
-        <img src='./logo_extract.png'></img>
+        <img src={logo} alt=""></img>
       </div>
       <br/>
     </nav>
   )
 }
 
-export default NavBar
+export default NavBar;
