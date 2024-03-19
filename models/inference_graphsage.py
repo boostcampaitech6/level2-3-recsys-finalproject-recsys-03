@@ -32,7 +32,7 @@ def load_meta_data(args):
 
 def load_graph_data(args, input_data, mapping_track_index):
     # 기존 그래프 데이터 로드
-    data = torch.load(f'{args.data_dir}serving_data_{args.filename}.pt')
+    data = torch.load(f'{args.data_dir}{args.graph_filename}')
 
     # user-track interaction 추가
     new_user_id = int(data['user']['node_id'][-1])    # 새로운 user의 인덱스를 데이터 내의 마지막 인덱스로 배정
@@ -50,7 +50,7 @@ def inference(input_data, k=20):
     # 기본 설정
     start_time = time.time()    # inference 소요 시간 계산
     args = parse_args()    # 파라미터 로드
-    logger = get_logger(filename=f'{args.log_dir}{args.filename}_inference.log')    # 로그 설정
+    logger = get_logger(filename=f'{args.log_dir}inference_{args.log_filename}')    # 로그 설정
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')    # GPU 설정
     
     # 데이터 로드
@@ -64,7 +64,7 @@ def inference(input_data, k=20):
     
     # 모델 로드
     model = Model(data=data, emb_dim=args.embedding_dim, hidden_dim=args.hidden_dim, n_layers=args.n_layers).to(device)
-    model.load_state_dict(torch.load(f'{args.model_dir}{args.filename}.pt'))
+    model.load_state_dict(torch.load(f'{args.model_dir}{args.model_filename}'))
     model.eval()    # 모델 평가 모드
 
     # 모델 로드 소요 시간
