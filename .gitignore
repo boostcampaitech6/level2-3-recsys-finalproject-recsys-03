@@ -5,3 +5,4 @@ backend/config.py
 backend/tag_model.py
 .venv
 */__pycache__
+.env
