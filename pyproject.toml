@@ -26,6 +26,7 @@ torchvision = "^0.15.0"
 torch = "2.0.0"
 torch-geometric = "^2.5.0"
 pytorch-lightning = "2.1.2"
+faiss-gpu = "^1.7.2"
 
 
 [build-system]

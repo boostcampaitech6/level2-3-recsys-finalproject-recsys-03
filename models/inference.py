@@ -12,24 +12,16 @@ def load_data():
 
 
 def inference(login_user_data, input_tags):
+    print(login_user_data)
+    print(type(login_user_data))
     start_time = time.time()
+    
     '''
     input type example:
-    
-    login_user_data = {
-        "user_id": 120322,
-        "track_id": [
-            49708132,
-            49708373,
-            49708211,
-            49711010,
-            49707378,
-            49709489
-            ]
-            }
-            
+    login_user_data = pd.DataFrame({"user_id" : 120328, "track_id" : 49708276}, {"user_id" : 120328, "track_id" : 49708277}, {"user_id" : 120328, "track_id" : 49708358})
     input_tags = "driving, party, upbeat, summer, electronic"
     '''
+    
     #recommended_track_id = graphsage_inference(k=1000) # Graphsage 결과값 상위 K개
     #tag_embedding.py로 tag_embedded.csv,song_embedded.csv 생성해주세요
     song_embedded, sideinfo_data, tag_embedded = load_data()
