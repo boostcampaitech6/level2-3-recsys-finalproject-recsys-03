@@ -46,7 +46,7 @@ def load_graph_data(args, input_data, mapping_track_index):
     return data, new_user_id
 
 
-def inference(input_data):
+def inference(input_data, k=20):
     # 기본 설정
     start_time = time.time()    # inference 소요 시간 계산
     args = parse_args()    # 파라미터 로드
@@ -87,7 +87,7 @@ def inference(input_data):
     # KNN을 통해 user 임베딩과 track 임베딩 사이의 거리 계산
     # MIPS(maximum inner product search) 기반 KNN
     mips = MIPSKNNIndex(track_emb)
-    _, track_indices = mips.search(new_user_emb, args.k)    # 대상 user와 가까운 track 출력
+    _, track_indices = mips.search(new_user_emb, k)    # 대상 user와 가까운 track 출력
     recommend_list = track_indices.tolist()[0]
     recommend_list = [mapping_index_track[str(i)] for i in recommend_list]   # 인덱싱된 track을 track_id로 변환
     
@@ -121,13 +121,13 @@ def inference(input_data):
     elapsed_time = end_time - start_time
     print(f'Total Inference Time : {elapsed_time:.2f}s')
     
-    return recommend_list[:args.k]
+    return recommend_list[:k]
 
 
 def main():
     args = parse_args()
     input_data = load_user_data(args)
-    _ = inference(input_data)
+    _ = inference(input_data, k=args.k)
 
 
 if __name__ == '__main__':

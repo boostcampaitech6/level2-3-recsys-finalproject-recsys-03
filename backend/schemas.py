@@ -8,6 +8,7 @@ class Token(BaseModel):
 
 class ChatRequest(BaseModel):
     chat:str
+    user_uri:str
 
 class Track(BaseModel):
     title:str
@@ -17,3 +18,6 @@ class Track(BaseModel):
 class recommendResponse(BaseModel):
     success:bool
     music:list[Track]
+
+class User(BaseModel):
+    user_uri: str
