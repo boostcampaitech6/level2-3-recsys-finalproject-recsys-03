@@ -52,29 +52,22 @@ def load_data(args):
     return user_track, track_artist, track_tag, user_emb, track_emb, artist_emb, tag_emb
 
 
-def train_valid_test_split(user_track, track_tag, valid_ratio, test_ratio):
-    # user-track interaction based testing
+def train_valid_test_split(user_track, valid_ratio, test_ratio):
     num_user = len(user_track['user_id'].unique())
     num_valid = int(num_user * valid_ratio)
     num_test = int(num_user * test_ratio)
     num_train = num_user - num_valid - num_test
 
     user_shuffled = np.random.permutation(user_track['user_id'].unique())
-    user_train = user_shuffled[ : num_train]
-    user_valid = user_shuffled[num_train : num_train+num_valid]
-    user_test = user_shuffled[num_train+num_valid : ]
+    user_train = user_shuffled[:num_train]
+    user_valid = user_shuffled[num_train:num_train+num_valid]
+    user_test = user_shuffled[num_train+num_valid:]
 
     train_interaction = user_track[user_track['user_id'].isin(user_train)]
     valid_interaction = user_track[user_track['user_id'].isin(user_valid)]
     test_interaction = user_track[user_track['user_id'].isin(user_test)]
-    
-    # tag-track content based testing
-    content_shuffled = track_tag.sample(frac=1).reset_index(drop=True)
-    valid_content = content_shuffled[ : int(len(track_tag) * valid_ratio)]
-    test_content = content_shuffled[int(len(track_tag) * valid_ratio) : int(len(track_tag) * test_ratio)]
-    train_content = content_shuffled[int(len(track_tag) * test_ratio) : ]
 
-    return train_interaction, valid_interaction, test_interaction, train_content, valid_content, test_content
+    return train_interaction, valid_interaction, test_interaction
 
 
 def mapping_index(args, train_interaction, valid_interaction, test_interaction, track_artist, track_tag):
@@ -130,8 +123,7 @@ def mapping_index(args, train_interaction, valid_interaction, test_interaction, 
     return mapping_user_index, mapping_track_index, mapping_artist_index, mapping_tag_index
 
 
-def convert_to_graph(args, train_interaction, valid_interaction, test_interaction,
-                     train_content, valid_content, test_content, track_artist,
+def convert_to_graph(args, train_interaction, valid_interaction, test_interaction, track_artist, track_tag,
                      user_emb, track_emb, artist_emb, tag_emb,
                      mapping_user_index, mapping_track_index, mapping_artist_index, mapping_tag_index):
     n_user = len(mapping_user_index)
@@ -167,17 +159,16 @@ def convert_to_graph(args, train_interaction, valid_interaction, test_interactio
     # user-track interaction
     user_id_mapped = [mapping_user_index[i] for i in train_interaction['user_id'].tolist()]
     track_id_mapped = [mapping_track_index[i] for i in train_interaction['track_id'].tolist()]
-    train_interaction_edge_index = torch.tensor([user_id_mapped, track_id_mapped], dtype=torch.long)
-    train_data['user', 'listen', 'track'].edge_index = train_interaction_edge_index
+    train_edge_index = torch.tensor([user_id_mapped, track_id_mapped], dtype=torch.long)
+    train_data['user', 'listen', 'track'].edge_index = train_edge_index
     # track-artist matching
     track_id_mapped = [mapping_track_index[i] for i in track_artist['track_id'].tolist()]
     artist_id_mapped = [mapping_artist_index[i] for i in track_artist['artist_name'].tolist()]
     train_data['track', 'sungby', 'artist'].edge_index = torch.tensor([track_id_mapped, artist_id_mapped], dtype=torch.long)
     # track-tag matching
-    track_id_mapped = [mapping_track_index[i] for i in train_content['track_id'].tolist()]
-    tag_id_mapped = [mapping_tag_index[i] for i in train_content['tag_name'].tolist()]
-    train_content_edge_index = torch.tensor([track_id_mapped, tag_id_mapped], dtype=torch.long)
-    train_data['track', 'tagged', 'tag'].edge_index = train_content_edge_index
+    track_id_mapped = [mapping_track_index[i] for i in track_tag['track_id'].tolist()]
+    tag_id_mapped = [mapping_tag_index[i] for i in track_tag['tag_name'].tolist()]
+    train_data['track', 'tagged', 'tag'].edge_index = torch.tensor([track_id_mapped, tag_id_mapped], dtype=torch.long)
     train_data = ToUndirected()(train_data)
 
     # valid data
@@ -192,19 +183,18 @@ def convert_to_graph(args, train_interaction, valid_interaction, test_interactio
     valid_data['artist'].x = x_artist
     valid_data['tag'].x = x_tag
     # user-track interaction
-    user_id_mapped = [mapping_user_index[i] for i in valid_interaction['user_id'].tolist()]
-    track_id_mapped = [mapping_track_index[i] for i in valid_interaction['track_id'].tolist()]
-    valid_interaction_edge_index = torch.tensor([user_id_mapped, track_id_mapped], dtype=torch.long)
-    valid_data['user', 'listen', 'track'].edge_index = torch.cat([train_interaction_edge_index, valid_interaction_edge_index], dim=1)
+    valid_user_id_mapped = [mapping_user_index[i] for i in valid_interaction['user_id'].tolist()]
+    valid_track_id_mapped = [mapping_track_index[i] for i in valid_interaction['track_id'].tolist()]
+    valid_edge_index = torch.tensor([valid_user_id_mapped, valid_track_id_mapped], dtype=torch.long)
+    valid_data['user', 'listen', 'track'].edge_index = torch.cat([train_edge_index, valid_edge_index], dim=1)
     # track-artist matching
     track_id_mapped = [mapping_track_index[i] for i in track_artist['track_id'].tolist()]
     artist_id_mapped = [mapping_artist_index[i] for i in track_artist['artist_name'].tolist()]
     valid_data['track', 'sungby', 'artist'].edge_index = torch.tensor([track_id_mapped, artist_id_mapped], dtype=torch.long)
     # track-tag matching
-    track_id_mapped = [mapping_track_index[i] for i in valid_content['track_id'].tolist()]
-    tag_id_mapped = [mapping_tag_index[i] for i in valid_content['tag_name'].tolist()]
-    valid_content_edge_index = torch.tensor([track_id_mapped, tag_id_mapped], dtype=torch.long)
-    valid_data['track', 'tagged', 'tag'].edge_index = torch.cat([train_content_edge_index, valid_content_edge_index], dim=1)
+    track_id_mapped = [mapping_track_index[i] for i in track_tag['track_id'].tolist()]
+    tag_id_mapped = [mapping_tag_index[i] for i in track_tag['tag_name'].tolist()]
+    valid_data['track', 'tagged', 'tag'].edge_index = torch.tensor([track_id_mapped, tag_id_mapped], dtype=torch.long)
     valid_data = ToUndirected()(valid_data)
 
     # test data
@@ -219,19 +209,18 @@ def convert_to_graph(args, train_interaction, valid_interaction, test_interactio
     test_data['artist'].x = x_artist
     test_data['tag'].x = x_tag
     # user-track interaction
-    user_id_mapped = [mapping_user_index[i] for i in test_interaction['user_id'].tolist()]
-    track_id_mapped = [mapping_track_index[i] for i in test_interaction['track_id'].tolist()]
-    test_interaction_edge_index = torch.tensor([user_id_mapped, track_id_mapped], dtype=torch.long)
-    test_data['user', 'listen', 'track'].edge_index = torch.cat([train_interaction_edge_index, test_interaction_edge_index], dim=1)
+    test_user_id_mapped = [mapping_user_index[i] for i in test_interaction['user_id'].tolist()]
+    test_track_id_mapped = [mapping_track_index[i] for i in test_interaction['track_id'].tolist()]
+    test_edge_index = torch.tensor([test_user_id_mapped, test_track_id_mapped], dtype=torch.long)
+    test_data['user', 'listen', 'track'].edge_index = torch.cat([train_edge_index, test_edge_index], dim=1)
     # track-artist matching
     track_id_mapped = [mapping_track_index[i] for i in track_artist['track_id'].tolist()]
     artist_id_mapped = [mapping_artist_index[i] for i in track_artist['artist_name'].tolist()]
     test_data['track', 'sungby', 'artist'].edge_index = torch.tensor([track_id_mapped, artist_id_mapped], dtype=torch.long)
     # track-tag matching
-    track_id_mapped = [mapping_track_index[i] for i in test_content['track_id'].tolist()]
-    tag_id_mapped = [mapping_tag_index[i] for i in test_content['tag_name'].tolist()]
-    test_content_edge_index = torch.tensor([track_id_mapped, tag_id_mapped], dtype=torch.long)
-    test_data['track', 'tagged', 'tag'].edge_index = torch.cat([train_content_edge_index, test_content_edge_index], dim=1)
+    track_id_mapped = [mapping_track_index[i] for i in track_tag['track_id'].tolist()]
+    tag_id_mapped = [mapping_tag_index[i] for i in track_tag['tag_name'].tolist()]
+    test_data['track', 'tagged', 'tag'].edge_index = torch.tensor([track_id_mapped, tag_id_mapped], dtype=torch.long)
     test_data = ToUndirected()(test_data)
 
     # serving data 저장
@@ -239,25 +228,22 @@ def convert_to_graph(args, train_interaction, valid_interaction, test_interactio
     del serving_data['track','rev_listen','user'], serving_data['artist','rev_sungby','track'], serving_data['tag','rev_tagged','track']    # inference에서 데이터 추가 후에 양방향으로 변환
     torch.save(serving_data, f'{args.data_dir}serving_data_{args.filename}.pt')
     
-    interaction_edge_index = [train_interaction_edge_index, valid_interaction_edge_index, test_interaction_edge_index]
-    content_edge_index = [train_content_edge_index, valid_content_edge_index, test_content_edge_index]
-    
-    return train_data, valid_data, test_data, interaction_edge_index, content_edge_index    # valid_edge_index / test_edge_index : train edge를 포함하지 않는 edge 출력
+    return train_data, valid_data, test_data, train_edge_index, valid_edge_index, test_edge_index    # valid_edge_index / test_edge_index : train edge를 포함하지 않는 edge 출력
+
 
 def data_preprocessing(args):
     # 데이터 로드
     user_track, track_artist, track_tag, user_emb, track_emb, artist_emb, tag_emb = load_data(args)
     
     # Train-Valid-Test 분할
-    train_interaction, valid_interaction, test_interaction, train_content, valid_content, test_content = train_valid_test_split(user_track, track_tag, args.valid_ratio, args.test_ratio)
+    train_interaction, valid_interaction, test_interaction = train_valid_test_split(user_track, args.valid_ratio, args.test_ratio)
     
     # 인덱싱
     mapping_user_index, mapping_track_index, mapping_artist_index, mapping_tag_index = mapping_index(args, train_interaction, valid_interaction, test_interaction, track_artist, track_tag)
     
     # Hetero Graph Data로 변환
-    train_data, valid_data, test_data, interaction_edge_index, content_edge_index = convert_to_graph(args, train_interaction, valid_interaction, test_interaction,
-                                                                                                              train_content, valid_content, test_content, track_artist,
+    train_data, valid_data, test_data, train_edge_index, valid_edge_index, test_edge_index = convert_to_graph(args, train_interaction, valid_interaction, test_interaction, track_artist, track_tag,
                                                                                                               user_emb, track_emb, artist_emb, tag_emb,
                                                                                                               mapping_user_index, mapping_track_index, mapping_artist_index, mapping_tag_index)
     
-    return train_data, valid_data, test_data, interaction_edge_index, content_edge_index
+    return train_data, valid_data, test_data, train_edge_index, valid_edge_index, test_edge_index

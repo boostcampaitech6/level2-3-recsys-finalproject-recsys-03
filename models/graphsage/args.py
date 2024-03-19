@@ -28,17 +28,16 @@ def parse_args():
     parser.add_argument('--batch_size', default=1024, type=int, help='DataLoader batch size')
     parser.add_argument('--learning_rate', default=0.001, type=float, help='Learning Rate')
     parser.add_argument('--margin', default=1, type=int, help='Contrastive Loss의 margin')
-    parser.add_argument('--epochs', default=100, type=int, help='Epoch 수')
-    parser.add_argument('--min_epochs', default=20, type=int, help='최소 Epoch 수')
-    parser.add_argument('--early_stopping', default=20, type=int, help='Validation 성능이 특정 횟수 동안 향상되지 않았을 때 Early Stopping 실행')
-
-    # 추천 파라미터
-    parser.add_argument('--k', default=100, type=int, help='Top@k: 추천 track 개수')
+    parser.add_argument('--epochs', default=50, type=int, help='Epoch 수')
+    parser.add_argument('--min_epochs', default=10, type=int, help='최소 Epoch 수')
+    parser.add_argument('--early_stopping', default=10, type=int, help='Validation 성능이 특정 횟수 동안 향상되지 않았을 때 Early Stopping 실행')
+    parser.add_argument('--topk', default=100, type=int, help='Top@k 평가 지표: 추천 track 개수')
 
     # 추론 파라미터
-    # 추론 과정에서 사용되는 파라미터 : serving_interaction_filename, k, data_dir, model_dir, track_filename, filename, embedding_dim, hidden_dim, n_layers
-    # serving_interaction_filename과 k 변경 가능, 다른 파라미터는 학습 상황과 동일하게 입력
-    parser.add_argument('--serving_interaction_filename', default='input_data.csv', type=str, help='interaction 파일명 (csv 형식)')
+    # 추론 과정에서 사용되는 파라미터 : serving_filename, k, data_dir, model_dir, track_filename, filename, embedding_dim, hidden_dim, n_layers
+    # 파라미터 중 serving_filename과 k만 변경 가능, 다른 파라미터들은 학습 상황과 동일하게 입력
+    parser.add_argument('--serving_filename', default='input_data.csv', type=str, help='interaction 파일명 (csv 형식)')
+    parser.add_argument('--k', default=100, type=int, help='추천 track 개수')
 
     args = parser.parse_args()
 

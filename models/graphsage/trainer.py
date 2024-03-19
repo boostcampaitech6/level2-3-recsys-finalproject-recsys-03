@@ -5,7 +5,7 @@ from torch_geometric.nn import MIPSKNNIndex
 from torch_geometric.metrics import LinkPredNDCG, LinkPredRecall
 
 
-def train(args, model, optimizer, loss, dataloader, data, train_interaction_edge_index, train_content_edge_index, k, device):
+def train(args, model, optimizer, loss, dataloader, data, train_edge_index, k, device):
     model.train()
 
     data = data.to(device)
@@ -43,18 +43,18 @@ def train(args, model, optimizer, loss, dataloader, data, train_interaction_edge
         edge_listen_track_emb = embeddings['track'][edge_listen_index[1]].to(device)    # edge에 대한 track 임베딩
         batch_loss += loss(edge_listen_user_emb, edge_listen_track_emb)
         
-        # # (track, sungby, artist) edge
-        # pos_edge_sungby_index = data['track', 'sungby', 'artist'].edge_index[:, batch['track', 'sungby', 'artist'].e_id].to(device)
-        # neg_edge_sungby_index = torch.empty(0, dtype=torch.int64).to(device)
-        # for _ in range(args.negative_sampling):
-        #     head_tensor, _, neg_tail_tensor = structured_negative_sampling(edge_index=pos_edge_sungby_index,
-        #                                                                    num_nodes=num_artist,
-        #                                                                    contains_neg_self_loops=False)
-        #     neg_edge_sungby_index = torch.cat((neg_edge_sungby_index, torch.vstack((head_tensor, neg_tail_tensor))), dim=1)
-        # edge_sungby_index = torch.cat((pos_edge_sungby_index, neg_edge_sungby_index), dim=1)
-        # edge_sungby_track_emb = embeddings['track'][edge_sungby_index[0]].to(device)
-        # edge_sungby_artist_emb = embeddings['artist'][edge_sungby_index[1]].to(device)
-        # batch_loss += loss(edge_sungby_track_emb, edge_sungby_artist_emb)
+        # (track, sungby, artist) edge
+        pos_edge_sungby_index = data['track', 'sungby', 'artist'].edge_index[:, batch['track', 'sungby', 'artist'].e_id].to(device)
+        neg_edge_sungby_index = torch.empty(0, dtype=torch.int64).to(device)
+        for _ in range(args.negative_sampling):
+            head_tensor, _, neg_tail_tensor = structured_negative_sampling(edge_index=pos_edge_sungby_index,
+                                                                           num_nodes=num_artist,
+                                                                           contains_neg_self_loops=False)
+            neg_edge_sungby_index = torch.cat((neg_edge_sungby_index, torch.vstack((head_tensor, neg_tail_tensor))), dim=1)
+        edge_sungby_index = torch.cat((pos_edge_sungby_index, neg_edge_sungby_index), dim=1)
+        edge_sungby_track_emb = embeddings['track'][edge_sungby_index[0]].to(device)
+        edge_sungby_artist_emb = embeddings['artist'][edge_sungby_index[1]].to(device)
+        batch_loss += loss(edge_sungby_track_emb, edge_sungby_artist_emb)
         
         # (track, tagged, tag) edge
         pos_edge_tagged_index = data['track', 'tagged', 'tag'].edge_index[:, batch['track', 'tagged', 'tag'].e_id].to(device)
@@ -78,15 +78,13 @@ def train(args, model, optimizer, loss, dataloader, data, train_interaction_edge
     average_loss = total_loss / num_batches
     
     # train 평가
-    ndcg_scores, recall_scores = test(model=model, data=data, k=k, device=device, train_mode=True,
-                                      train_interaction_edge_index=train_interaction_edge_index, train_content_edge_index=train_content_edge_index)
+    ndcg_scores, recall_scores = test(model=model, data=data, k=k, device=device, train_mode=True, train_edge_index=train_edge_index)
     
     return ndcg_scores, recall_scores, average_loss
 
 
 @torch.no_grad()
-def test(model, data, k, device, train_mode=False, interaction_mode=True, content_mode=True,
-         train_interaction_edge_index=None, test_interaction_edge_index=None, train_content_edge_index=None, test_content_edge_index=None):
+def test(model, data, k, device, train_mode=False, train_edge_index=None, test_edge_index=None):
     model.eval()
 
     embeddings = model(data.to(device))
@@ -100,60 +98,48 @@ def test(model, data, k, device, train_mode=False, interaction_mode=True, conten
     recall_scores = [0, 0]
     
     # Interaction 성능 평가
-    if interaction_mode:
-        train_interaction_edge_index = train_interaction_edge_index.to(device)
-        if not train_mode:    # train 상황에는 제외
-            test_interaction_edge_index = test_interaction_edge_index.to(device)
-        
-        # MIPS(maximum inner product search) 기반 KNN
-        if train_mode:    # train 상황에는 train 데이터만 입력하여 예측
-            _, pred_interaction_index_mat = MIPSKNNIndex(track_emb).search(user_emb, k)    # user 정보를 기반으로 track 추천
-        else:    # test 상황에는 train 데이터를 제외하고 예측
-            _, pred_interaction_index_mat = MIPSKNNIndex(track_emb).search(user_emb, k, exclude_links=train_interaction_edge_index)
-        
-        # 평가 지표
-        ndcg_interaction_metric = LinkPredNDCG(k=k).to(device)
-        recall_interaction_metric = LinkPredRecall(k=k).to(device)
-        
-        # train에서 평가하는 데이터와 validation/test에서 평가하는 데이터 구분
-        if train_mode:
-            ndcg_interaction_metric.update(pred_interaction_index_mat, train_interaction_edge_index)
-            recall_interaction_metric.update(pred_interaction_index_mat, train_interaction_edge_index)
-        else:
-            ndcg_interaction_metric.update(pred_interaction_index_mat, test_interaction_edge_index)
-            recall_interaction_metric.update(pred_interaction_index_mat, test_interaction_edge_index)
-        
-        ndcg_interaction_score = float(ndcg_interaction_metric.compute())
-        recall_interaction_score = float(recall_interaction_metric.compute())
-        
-        ndcg_scores[0] = ndcg_interaction_score
-        recall_scores[0] = recall_interaction_score
+    train_edge_index = train_edge_index.to(device)
+    if not train_mode:    # train 상황에는 제외
+        test_edge_index = test_edge_index.to(device)
+    
+    # MIPS(maximum inner product search) 기반 KNN
+    if train_mode:    # train 상황에는 train 데이터만 입력하여 예측
+        _, pred_interaction_index_mat = MIPSKNNIndex(track_emb).search(user_emb, k)    # user 정보를 기반으로 track 추천
+    else:    # test 상황에는 train 데이터를 제외하고 예측
+        _, pred_interaction_index_mat = MIPSKNNIndex(track_emb).search(user_emb, k, exclude_links=train_edge_index)
+    
+    ndcg_interaction_metric = LinkPredNDCG(k=k).to(device)
+    recall_interaction_metric = LinkPredRecall(k=k).to(device)
+    
+    if train_mode:    # train에서 평가하는 데이터와 validation/test에서 평가하는 데이터 구분
+        ndcg_interaction_metric.update(pred_interaction_index_mat, train_edge_index)
+        recall_interaction_metric.update(pred_interaction_index_mat, train_edge_index)
+    else:
+        ndcg_interaction_metric.update(pred_interaction_index_mat, test_edge_index)
+        recall_interaction_metric.update(pred_interaction_index_mat, test_edge_index)
+    
+    ndcg_interaction_score = float(ndcg_interaction_metric.compute())
+    recall_interaction_score = float(recall_interaction_metric.compute())
+    
+    ndcg_scores[0] = ndcg_interaction_score
+    recall_scores[0] = recall_interaction_score
 
     # Content 성능 평가
-    if content_mode:
-        train_content_edge_index = train_content_edge_index.to(device)
-        if not train_mode:
-            test_content_edge_index = test_content_edge_index.to(device)
-        
-        if train_mode:
-            _, pred_content_index_mat = MIPSKNNIndex(track_emb).search(tag_emb, k)    # tag 정보를 기반으로 track 추천
-        else:
-            _, pred_content_index_mat = MIPSKNNIndex(track_emb).search(tag_emb, k, exclude_links=train_content_edge_index)
-        
-        ndcg_content_metric = LinkPredNDCG(k=k).to(device)
-        recall_content_metric = LinkPredRecall(k=k).to(device)
-        
-        if train_mode:
-            ndcg_content_metric.update(pred_content_index_mat, train_content_edge_index)
-            recall_content_metric.update(pred_content_index_mat, train_content_edge_index)
-        else:
-            ndcg_content_metric.update(pred_content_index_mat, test_content_edge_index)
-            recall_content_metric.update(pred_content_index_mat, test_content_edge_index)
-        
-        ndcg_content_score = float(ndcg_content_metric.compute())
-        recall_content_score = float(recall_content_metric.compute())
+    content_edge_index = data['tag', 'rev_tagged', 'track'].edge_index
+    content_edge_index = content_edge_index.to(device)
+    
+    _, pred_content_index_mat = MIPSKNNIndex(track_emb).search(tag_emb, k)    # tag 정보를 기반으로 track 추천
+    
+    ndcg_content_metric = LinkPredNDCG(k=k).to(device)
+    recall_content_metric = LinkPredRecall(k=k).to(device)
+    
+    ndcg_content_metric.update(pred_content_index_mat, content_edge_index)
+    recall_content_metric.update(pred_content_index_mat, content_edge_index)
+    
+    ndcg_content_score = float(ndcg_content_metric.compute())
+    recall_content_score = float(recall_content_metric.compute())
 
-        ndcg_scores[1] = ndcg_content_score
-        recall_scores[1] = recall_content_score
+    ndcg_scores[1] = ndcg_content_score
+    recall_scores[1] = recall_content_score
     
     return ndcg_scores, recall_scores
