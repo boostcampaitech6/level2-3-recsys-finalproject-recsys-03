@@ -28,15 +28,15 @@ class Model(torch.nn.Module):
 
         # 임베딩 초기값 설정 (특성 정보가 없는 경우, 임의로 초기값 설정)
         if hasattr(data['user'], 'x'):
-            self.user_emb = nn.Embedding(num_embeddings=data['user'].num_nodes, embedding_dim=emb_dim/2)
-            self.track_emb = nn.Embedding(num_embeddings=data['track'].num_nodes, embedding_dim=emb_dim/2)
-            self.artist_emb = nn.Embedding(num_embeddings=data['artist'].num_nodes, embedding_dim=emb_dim/2)
-            self.tag_emb = nn.Embedding(num_embeddings=data['tag'].num_nodes, embedding_dim=emb_dim/2)
+            self.user_emb = nn.Embedding(num_embeddings=data['user'].num_nodes, embedding_dim=int(emb_dim/2))
+            self.track_emb = nn.Embedding(num_embeddings=data['track'].num_nodes, embedding_dim=int(emb_dim/2))
+            self.artist_emb = nn.Embedding(num_embeddings=data['artist'].num_nodes, embedding_dim=int(emb_dim/2))
+            self.tag_emb = nn.Embedding(num_embeddings=data['tag'].num_nodes, embedding_dim=int(emb_dim/2))
             
-            self.user_feature_transform = nn.Linear(12, emb_dim/2)
-            self.track_feature_transform = nn.Linear(12, emb_dim/2)
-            self.artist_feature_transform = nn.Linear(12, emb_dim/2)
-            self.tag_feature_transform = nn.Linear(14, emb_dim/2)
+            self.user_feature_transform = nn.Linear(12, int(emb_dim/2))
+            self.track_feature_transform = nn.Linear(12, int(emb_dim/2))
+            self.artist_feature_transform = nn.Linear(12, int(emb_dim/2))
+            self.tag_feature_transform = nn.Linear(14, int(emb_dim/2))
         
         else:
             self.user_emb = nn.Embedding(num_embeddings=data['user'].num_nodes, embedding_dim=emb_dim)

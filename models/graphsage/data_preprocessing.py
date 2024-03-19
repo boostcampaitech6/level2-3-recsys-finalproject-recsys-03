@@ -226,7 +226,7 @@ def convert_to_graph(args, train_interaction, valid_interaction, test_interactio
     # serving data 저장
     serving_data = copy.deepcopy(train_data)    # serving data에 train 정보 포함
     del serving_data['track','rev_listen','user'], serving_data['artist','rev_sungby','track'], serving_data['tag','rev_tagged','track']    # inference에서 데이터 추가 후에 양방향으로 변환
-    torch.save(serving_data, f'{args.data_dir}serving_data_{args.filename}.pt')
+    torch.save(serving_data, f'{args.data_dir}{args.graph_filename}')
     
     return train_data, valid_data, test_data, train_edge_index, valid_edge_index, test_edge_index    # valid_edge_index / test_edge_index : train edge를 포함하지 않는 edge 출력
 
