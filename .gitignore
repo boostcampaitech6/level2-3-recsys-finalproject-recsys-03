@@ -8,3 +8,6 @@ backend/tag_model.py
 .env
 *.csv
 *.json
+*.pt
+models/model/GraphSAGE.pt
+models/model/graphsage.pt
