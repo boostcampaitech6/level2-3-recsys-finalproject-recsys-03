@@ -14,7 +14,7 @@ def main():
     args = parse_args()
     set_seed(args.seed)
     makedirs(args.log_dir)
-    logger = get_logger(filename=f'{args.log_dir}{args.filename}.log')
+    logger = get_logger(filename=f'{args.log_dir}{args.log_filename}')
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     warnings.filterwarnings('ignore')
     
@@ -83,7 +83,7 @@ def main():
         if val_ndcg[0] > best_val_interaction_dict['train_ndcg']:
             logger.info(f'Best Valid Interaction NDCG@{args.topk} is Updated')
             best_val_interaction_dict = {'epoch': epoch, 'train_loss': train_loss, 'train_ndcg': train_ndcg[0], 'train_recall': train_recall[0], 'val_ndcg': val_ndcg[0], 'val_recall': val_recall[0]}
-            torch.save(model.state_dict(), f'{args.model_dir}{args.filename}_interaction.pt')    # interaction 모델 저장
+            torch.save(model.state_dict(), f'{args.model_dir}interaction_{args.model_filename}')    # interaction 모델 저장
             counter_interaction = 0
         else:
             counter_interaction += 1
@@ -91,7 +91,7 @@ def main():
         if val_ndcg[1] > best_val_content_dict['train_ndcg']:
             logger.info(f'Best Valid Content NDCG@{args.topk} is Updated')
             best_val_content_dict = {'epoch': epoch, 'train_loss': train_loss, 'train_ndcg': train_ndcg[1], 'train_recall': train_recall[1], 'val_ndcg': val_ndcg[1], 'val_recall': val_recall[1]}
-            torch.save(model.state_dict(), f'{args.model_dir}{args.filename}_content.pt')    # content 모델 저장
+            torch.save(model.state_dict(), f'{args.model_dir}content_{args.model_filename}')    # content 모델 저장
             counter_content = 0
         else:
             counter_content += 1
@@ -102,7 +102,7 @@ def main():
             break
     
     # 마지막 epoch 모델 저장
-    torch.save(model.state_dict(), f'{args.model_dir}{args.filename}.pt')
+    torch.save(model.state_dict(), f'{args.model_dir}{args.model_filename}')
     
     # Best 모델 결과 출력
     logger.info('Best Interaction Model')
@@ -124,7 +124,7 @@ def main():
     
     logger.info('Test with Best Interaction Model')
     model = Model(data=train_data, emb_dim=args.embedding_dim, hidden_dim=args.hidden_dim, n_layers=args.n_layers).to(device)
-    model.load_state_dict(torch.load(f'{args.model_dir}{args.filename}_interaction.pt'))    # Best 모델 로드
+    model.load_state_dict(torch.load(f'{args.model_dir}interaction_{args.model_filename}'))    # Best interaction 모델 로드
     test_ndcg, test_recall = test(model=model, data=test_data, k=args.topk, device=device,
                                   train_edge_index=train_edge_index, test_edge_index=test_edge_index)
     logger.info(f'Test Interaction NDCG@{args.topk}: {test_ndcg[0]:.4f}   Test Interaction Recall@{args.topk}: {test_recall[0]:.4f}')
@@ -132,7 +132,7 @@ def main():
     
     logger.info('Test with Best Content Model')
     model = Model(data=train_data, emb_dim=args.embedding_dim, hidden_dim=args.hidden_dim, n_layers=args.n_layers).to(device)
-    model.load_state_dict(torch.load(f'{args.model_dir}{args.filename}_content.pt'))    # Best 모델 로드
+    model.load_state_dict(torch.load(f'{args.model_dir}content_{args.model_filename}'))    # Best content 모델 로드
     test_ndcg, test_recall = test(model=model, data=test_data, k=args.topk, device=device,
                                   train_edge_index=train_edge_index, test_edge_index=test_edge_index)
     logger.info(f'Test Interaction NDCG@{args.topk}: {test_ndcg[0]:.4f}   Test Interaction Recall@{args.topk}: {test_recall[0]:.4f}')

@@ -1,7 +1,10 @@
+// eslint-disable-next-line no-unused-vars
 import React, {useEffect, useState} from 'react'
+// eslint-disable-next-line no-unused-vars
 import axios from 'axios'
 
 import './infoList.css'
+import spotify_logo from "../../images/white_icon.png"
 
 const add_items = (playlist_id, access_token, playlist) => {
     fetch(`https://api.spotify.com/v1/playlists/${playlist_id}/tracks`, {
@@ -69,6 +72,7 @@ const get_user_id = (access_token, playlist) => {
 }
 
 function Export(props) {
+    // eslint-disable-next-line no-unused-vars
     const [Token, setToken] = useState(localStorage.getItem("accessToken"))
     const login = props.login
     let uris = props.playlist.map(song => song.uri)
@@ -96,7 +100,7 @@ function Export(props) {
             {login &&
                 <div className='save' onClick={handleClick}>
                     <h3>PLAY ON SPOTIFY</h3>
-                    <img src="./white_icon.png"></img>
+                    <img src={spotify_logo} alt=""></img>
                 </div>
             }
         </div>
