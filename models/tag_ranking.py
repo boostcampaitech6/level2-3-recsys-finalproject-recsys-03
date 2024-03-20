@@ -1,5 +1,6 @@
 import pandas as pd
 import ast
+import re
 
 def string_to_list(s):
     try:
@@ -38,6 +39,22 @@ def tag_ranking(recommended_list, input_tags, N):
 
     return recommended_ids, recommended_titles, recommended_artists, recommended_uris, recommended_selected_tags
 
+def genre_export(login_user_data_content,sideinfo_data,tag_genre_list):
+    login_user_data_content_sideinfo = tag_ranking_load_data(login_user_data_content,sideinfo_data)
+    login_user_data_content_sideinfo['tag_list'] = login_user_data_content_sideinfo['tag_string'].apply(lambda x: x.split())
 
+    genre_tags_set = set(tag_genre_list['Genre Tags'].str.lower().apply(lambda x: x.split()).explode())
 
+    # Filter tag_list in login_user_data_content_sideinfo based on genre_tags_set
+    login_user_data_content_sideinfo['genre_list'] = login_user_data_content_sideinfo['tag_list'].apply(
+        lambda tags: [tag for tag in tags if tag in genre_tags_set]
+    )
 
+    genre_preferred = list(set(genre for sublist in login_user_data_content_sideinfo['genre_list'] for genre in sublist))
+    return genre_preferred
+
+def genre_filtering(genre_preferred,song_embedded):
+    pattern = '|'.join([fr"\'{genre}\'(?=[^a-zA-Z]|$)" for genre in genre_preferred])
+
+    filtered_songs = song_embedded[song_embedded['tags'].str.contains(pattern, flags=re.IGNORECASE, na=False)]
+    return filtered_songs
