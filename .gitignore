@@ -4,7 +4,7 @@ backend/.env
 backend/config.py
 backend/tag_model.py
 .venv
-*/__pycache__
+__pycache__
 .env
 *.csv
 *.json

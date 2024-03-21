@@ -2,27 +2,29 @@ import time
 import pandas as pd
 from models.inference_graphsage import inference_graphsage
 from models.content_based_model import combining_track, combining_tag, content_based_model
-from models.tag_ranking import tag_ranking_load_data, tag_ranking
+from models.tag_ranking import tag_ranking_load_data, tag_ranking, genre_export, genre_filtering
 
 
 def load_data():
     song_embedded = pd.read_csv('../data/song_embedded.csv', index_col=0)
     sideinfo_data = pd.read_csv('../data/preprocessed_music3.csv', index_col=0)
     tag_embedded = pd.read_csv('../data/tag_embedded.csv', index_col=0)
-    return song_embedded, sideinfo_data, tag_embedded
+    tag_genre_list = pd.read_csv('../data/tag_genre_list.csv')
+
+    return song_embedded, sideinfo_data, tag_embedded, tag_genre_list
 
 
 def inference(login_user_data, input_tags):
     start_time = time.time()
     
     '''
-    input type example:
+    #input type example:
     login_user_data = pd.DataFrame({"user_id" : 120328, "track_id" : 49708276}, {"user_id" : 120328, "track_id" : 49708277}, {"user_id" : 120328, "track_id" : 49708358})
     input_tags = "driving, party, upbeat, summer, electronic"
     '''
     
     #tag_embedding.py로 tag_embedded.csv,song_embedded.csv 생성해주세요
-    song_embedded, sideinfo_data, tag_embedded = load_data()
+    song_embedded, sideinfo_data, tag_embedded, tag_genre_list = load_data()
     
     recommended_tracks = []    # 최종 추천 결과 
     try: 
@@ -45,7 +47,9 @@ def inference(login_user_data, input_tags):
         if len(login_user_data_content['track_id'])>=3: 
             #User의 정보가 있는 경우 : 선호 음악 3개 활용
             user_embedded = combining_track(login_user_data_content,song_embedded,3)
-            recommended_track_id_content = content_based_model(user_embedded,song_embedded,100)
+            genre_preferred = genre_export(login_user_data_content,sideinfo_data,tag_genre_list)
+            song_filtered = genre_filtering(genre_preferred,song_embedded)
+            recommended_track_id_content = content_based_model(user_embedded,song_filtered,100)
         else:
             #User의 정보가 없는경우 : input tags 사용
             user_embedded = combining_tag(input_tags,tag_embedded)
