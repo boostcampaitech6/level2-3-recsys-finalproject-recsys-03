@@ -45,7 +45,6 @@ async def get_spotify(url, token):
             
 @router.post('/login', status_code=201)
 async def login(token_info:Token):
-    print(token_info.access_token)
     user = await get_spotify(url = "https://api.spotify.com/v1/me", token=token_info.access_token)
     top_items = await get_spotify(url = "https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=50", token=token_info.access_token)
 
@@ -56,26 +55,40 @@ async def login(token_info:Token):
     tracks_collection = db['Track']
     listening_collection = db['Listening Events']
 
-    if not users_collection.find_one({'uri':user['id']}):
+    existing_user = users_collection.find_one({'uri':user['id']})
+
+    if existing_user:
+        for item in top_items['items']:
+            track = tracks_collection.find_one({'uri':item['id']})
+            track_id = track['track_id'] if track else -1
+            
+            music = {
+                'uri':item['id'],
+                'track_id':track_id
+            }
+
+            if music not in existing_user.get('top_track', []):
+                users_collection.update_one({'uri': user['id']}, {'$push': {'top_track': music}})
+            if track_id!=-1:
+                listening_collection.update_one(
+                    {'user_id' : existing_user['user_id']},
+                    {'$addToSet': {'track_id': track_id}},
+                    upsert=True
+                )
+    else:
         top_item_list = []
         listening_list = []
         for item in top_items['items']:
             # artist 여러명인 경우 처리
-            artists = item['artists']
-            artist_list= []
-            for artist in artists:
-                artist_list.append(artist['name'])
+            # artists = [artist['name'] for artist in item['artists']]
             
             # track_id 조회
             track = tracks_collection.find_one({'uri':item['id']})
-            track_id = -1
-            if track:
-                track_id = track['track_id']
+            track_id = track['track_id'] if track else -1
+            if track_id!=-1:
                 listening_list.append(track_id)
 
             music = {
-                'artist_name':', '.join(artist_list),
-                'track_name':item['name'],
                 'uri':item['id'],
                 'track_id':track_id
             }
@@ -92,7 +105,7 @@ async def login(token_info:Token):
         }
         users_collection.insert_one(user_data)
 
-        if len(listening_list)>0:
+        if listening_list:
             listening_event = {
                 'user_id':last_user['user_id'] + 1,
                 'track_id':listening_list
