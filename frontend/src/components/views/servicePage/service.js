@@ -6,7 +6,7 @@ import NavBar from '../navBar/navBar'
 import Footer from '../footer/footer'
 import InfoList from './infoList'
 import './service.css'
-import { redirect } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom'
 
 const getReturnedParam = (hash) => {
     const strAfterHash = hash.substring(1)
@@ -27,6 +27,7 @@ function Service(props) {
     const [Login, setLogin] = useState(false)
     const [UserUri, setUserUri] = useState("")
     const [Tags, setTags] = useState([])
+    let navigate = useNavigate()
 
 
     useEffect(()=> {
@@ -62,8 +63,8 @@ function Service(props) {
                 setUserUri(response.data.uri)
                 getTags(response.data.uri)
             }else{
-                alert('fail to login')
-                redirect('/')
+                alert('Fail to login')
+                navigate('/')
             }
         })
     }
@@ -72,6 +73,7 @@ function Service(props) {
     //get tag list
     const getTags = (user_uri) => {
         axios.put('http://localhost:8000/tags', {"user_uri": user_uri})
+        //axios.put('http://localhost:3000/api/tags', {"user_uri": user_uri})
         .then(response => {
             if(response.data.success){
                 console.log("succes to get tags")
@@ -104,6 +106,12 @@ function Service(props) {
 
     //추천 플레이리스트 가져오기
     const getPlaylist = (chat, user_uri) => {
+        console.log(chat)
+        if (chat == "" && chat == " "){
+            alert("Invalid input")
+            navigate('/')
+            return
+        }
         console.log("get playlist")
         axios.put('http://localhost:8000/recommend', {"chat": chat, "user_uri": user_uri})
         .then(response => {
