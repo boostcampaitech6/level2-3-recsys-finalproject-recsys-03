@@ -38,10 +38,6 @@ function InfoList(props) {
     
     return(
         <div className='chats'>
-            <div className='service_chat'>
-                <p className='sender'>Chat</p>
-                <h3 className='chat'>안녕하세요, 당신이 원하는 플레이리스트는 무엇인가요?</h3>
-            </div>
             {recommendation}
         </div>
     )
