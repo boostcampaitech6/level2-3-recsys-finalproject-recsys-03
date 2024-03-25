@@ -52,47 +52,29 @@ const create_playlist = (user_id, access_token, playlist) => {
     })
 }
 
-const get_user_id = (access_token, playlist) => {
-    fetch(`https://api.spotify.com/v1/me`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${access_token}`,
-            'Content-Type': 'application/json'
-        },
-    }).then(response => {
-        if(response.ok){
-            console.log("get user id")
-            return response.json()
-        }else{
-            console.log("fail to get user_id")
-        }
-    }).then(data => {
-        create_playlist(data.id, access_token, playlist)
-    })
-}
-
 function Export(props) {
-    // eslint-disable-next-line no-unused-vars
     const [Token, setToken] = useState(localStorage.getItem("accessToken"))
     const login = props.login
-    let uris = props.playlist.map(song => song.uri)
+    const user_uri = props.user_uri
+    let playlist = props.playlist.map(song => song.uri)
     
-    //추후 implicit feedback 받기
-    // const exported_items = (playlist) => {
-    //     axios.post('http://localhost:8000/feedback', playlist)
-    //     .then(response => {
-    //         if(response.data.success){
-    //             console.log("succes to save")
-    //         }else{
-    //             alert('fail to save')
-    //         }
-    //     })
-    // }
+    //implicit feedback 받기
+    const exported_items = (playlist, user_id) => {
+        axios.post('https://au-dionysos.com/api/feedback', {playlist: playlist, user_id: user_id})
+        .then(response => {
+            if(response.ok){
+                console.log("succes to save feedback")
+            }else{
+                alert('fail to save feedback')
+            }
+        })
+    }
+
 
     const handleClick = (event) => {
         //get user id -> create playlist -> add items
-        get_user_id(Token, uris)
-        //exported_items(props.playlist)
+        create_playlist(user_uri, Token, playlist)
+        exported_items(playlist, user_uri)
     }
 
     return(

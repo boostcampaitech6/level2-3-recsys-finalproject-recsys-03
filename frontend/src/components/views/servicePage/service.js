@@ -72,7 +72,6 @@ function Service(props) {
 
     //get tag list
     const getTags = (user_uri) => {
-        //axios.put('http://localhost:8000/tags', {"user_uri": user_uri})
         axios.put('https://au-dionysos.com/api/tags', {"user_uri": user_uri})
         .then(response => {
             if(response.data.success){
@@ -91,7 +90,7 @@ function Service(props) {
         setChatList(ChatList.concat(tag))
         localStorage.setItem("chat", tag)
         localStorage.setItem("chatList", ChatList)
-        getPlaylist(tag, UserUri)
+        getPlaylist(tag, UserUri, "tag")
         setChat("")
     }
 
@@ -105,23 +104,22 @@ function Service(props) {
     })
 
     //추천 플레이리스트 가져오기
-    const getPlaylist = (chat, user_uri) => {
-        console.log(chat)
-        if (chat == "" && chat == " "){
+    const getPlaylist = (chat, user_uri, type) => {
+        if (chat == "" || chat == " "){
             alert("Invalid input")
             navigate('/')
-            return
+        } else {
+            console.log("get playlist")
+            axios.put('https://au-dionysos.com/api/recommend', {"chat": chat, "user_uri": user_uri, "type":type})
+            .then(response => {
+                if(response.data.success){
+                    console.log("succes to get playlist")
+                    setPlaylist(response.data.playlist)
+                }else{
+                    console.log('fail to get playlist')
+                }
+            })
         }
-        console.log("get playlist")
-        axios.put('https://au-dionysos.com/api/recommend', {"chat": chat, "user_uri": user_uri})
-        .then(response => {
-            if(response.data.success){
-                console.log("succes to get playlist")
-                setPlaylist(response.data.playlist)
-            }else{
-                console.log('fail to get playlist')
-            }
-        }) 
     }
 
     //챗 내용 저장
@@ -134,7 +132,7 @@ function Service(props) {
         setChatList(ChatList.concat(Chat))
         localStorage.setItem("chat", Chat)
         localStorage.setItem("chatList", ChatList)
-        getPlaylist(Chat, UserUri)
+        getPlaylist(Chat, UserUri, "chat")
         setChat("")
     }
 
@@ -142,7 +140,7 @@ function Service(props) {
         <div className='page'>
             <NavBar />
             <div className='chatbox'>
-                <InfoList tags={Tags} chats={ChatList} playlists={Playlists} login={Login}/>
+                <InfoList tags={Tags} chats={ChatList} playlists={Playlists} login={Login} user_uri={UserUri}/>
             </div>
             <form onSubmit={onSubmit} className='chatform'>
                 <textarea className='enterChat'
