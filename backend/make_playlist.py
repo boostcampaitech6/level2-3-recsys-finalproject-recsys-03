@@ -22,22 +22,20 @@ def find_document_by_uri(uri):
         data = []
         user_id = document['user_id']
         for track in document['top_track']:
-            track_id = track['track_id']
-            if track_id == -1:
-                pass
-            # Track DB에 저장되지 않은 아이템 인터렉션 제외
-            else:
-                data.append({'user_id': user_id, 'track_id': track_id})
+            data.append({'user_id': user_id, 'track_id': track})
         tracks_df = pd.DataFrame(data)
         return tracks_df
 
-def make_playlist(question, uri, tag_list):
+def make_playlist(question, uri, tag_list, type):
     start = time.time()
     # 유저 시청 이력 수집
     login_user_data = find_document_by_uri(uri)
     # 채팅 입력 -> 적합한 태그 5개 선택
-    print(tag_list)
-    input_tag = ', '.join(filter_model(question, tag_list))
+    if type=="chat":
+        input_tag = ', '.join(filter_model(question, tag_list))
+    elif type=="tag":
+        input_tag = question
+    print(input_tag)
     middle = time.time()
     song_list = inference(login_user_data, input_tag)
     end = time.time()

@@ -105,7 +105,7 @@ async def recommend_displayed_tags(user: User):
     user_uri = user.user_uri
     # 비회원인 경우
     if user_uri == "":
-        tag_list = ["winter", "pop", "energetic", "sadness", "00s", "singer songwriter", "piano"]
+        tag_list = ["winter", "kpop", "pop", "energetic", "sadness", "00s", "singer songwriter", "piano"]
     else:
         # MongoDB 연결
         client = MongoClient(config.db_url)
@@ -132,7 +132,7 @@ async def recommend_displayed_tags(user: User):
             tag_sorted = dict(sorted(tag_counter.items(), key=lambda item: item[1], reverse=True))
             tag_list = list(tag_sorted.keys())[:7]
         else:
-            tag_list = ["winter", "pop", "energetic", "sadness", "00s", "singer songwriter", "piano"]
+            tag_list = ["winter", "kpop", "pop", "energetic", "sadness", "00s", "singer songwriter", "piano"]
         
     # 현재 월, 시간, 날씨를 기반으로 태그 추천
     now = datetime.now()
@@ -170,6 +170,7 @@ async def recommend_tag(chatRequest:ChatRequest):
     start = time.time()
     chat = chatRequest.chat
     user_uri = chatRequest.user_uri
+    type = chatRequest.type
 
     client = MongoClient(config.db_url)
     db = client['playlist_recommendation']
@@ -191,7 +192,7 @@ async def recommend_tag(chatRequest:ChatRequest):
     #     playlist.append(track)
     # if not titles:
     #     return JSONResponse(content={"success": False, "message": "Can't get recommend result"})
-    playlist = make_playlist(chat, user_uri, tags)
+    playlist = make_playlist(chat, user_uri, tags, type)
     for item in playlist:
         item['uri'] = "spotify:track:" + item['uri']
         
