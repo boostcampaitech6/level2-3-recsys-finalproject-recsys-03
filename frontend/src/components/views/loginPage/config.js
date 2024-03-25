@@ -1,6 +1,6 @@
 export const CLIENT_ID = 'a6034aad50b54280b0c197191b51d301'
 export const SPOTIFY_AUTHORIZE_ENDPOINT = 'https://accounts.spotify.com/authorize'
-export const REDIRECT_URL = "http://localhost:3000/service"
+export const REDIRECT_URL = "https://au-dionysos.com/service"
 const SPACE_DELIMITER = "%20"
 const SCOPES = [
     "user-top-read", 

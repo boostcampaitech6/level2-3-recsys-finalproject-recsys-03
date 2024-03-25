@@ -23,10 +23,8 @@ function Spotify_login(props) {
         <div className='login'>
             <h1>Au-Dionysos</h1>
             <h3>Don't ruin my mood!</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, 
-                sed do eiusmod tempor incididunt ut labore et dolore magna 
-                aliqua. Ut enim ad minim veniam, quis nostrud exercitation 
-                ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <p>Au-Dionysos는 당신의 상황, 감정, 취향을 반영한 플레이리스트를 생성해드립니다. <br/> 
+                당신의 이야기를 들려주세요. 저희는 당신에게 공감해 멋진 노래를 선물해드릴게요.</p>
             <div className='buttons'>
                 <button onClick={handleLogin}>Login with Spotify</button>
                 <button onClick={guestLogin}>Guest Login</button>
