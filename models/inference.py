@@ -2,14 +2,13 @@ import time
 import pandas as pd
 from models.inference_graphsage import inference_graphsage
 from models.content_based_model import combining_track, combining_tag, content_based_model
-from models.tag_ranking import tag_ranking_load_data, tag_ranking, genre_export, genre_filtering
-
+from models.tag_ranking import tag_ranking_load_data, tag_ranking, genre_export, genre_filtering, filter_by_genre, filter_tags_by_input
 
 def load_data():
-    song_embedded = pd.read_csv('../data/song_embedded.csv', index_col=0)
-    sideinfo_data = pd.read_csv('../data/preprocessed_music3.csv', index_col=0)
+    song_embedded = pd.read_csv('../data/song_embedded_hyperpersonalized.csv', index_col=0)
+    sideinfo_data = pd.read_csv('../data/preprocessed_music5.csv', index_col=0)
     tag_embedded = pd.read_csv('../data/tag_embedded.csv', index_col=0)
-    tag_genre_list = pd.read_csv('../data/tag_genre_list.csv')
+    tag_genre_list = pd.read_csv('../data/track_genre.csv')
 
     return song_embedded, sideinfo_data, tag_embedded, tag_genre_list
 
@@ -33,13 +32,18 @@ def inference(login_user_data, input_tags):
         login_user_data_interaction = login_user_data[login_user_data['interaction_exist'] == 1].drop('interaction_exist', axis=1)
         login_user_data_content = login_user_data[login_user_data['interaction_exist'] == 0].drop('interaction_exist', axis=1)
         
+
+
         # GraphSAGE model for interaction data
         interaction_time = time.time()
         print(f"data load time : {interaction_time - start_time:.5f} sec")
         
         recommended_track_id_interaction = inference_graphsage(login_user_data_interaction, k=100)    # Graphsage 결과값 상위 K개
         recommended_list_interaction = tag_ranking_load_data(recommended_track_id_interaction,sideinfo_data)
-        
+        input_genres = filter_tags_by_input(sideinfo_data,input_tags)
+        recommended_list_filtered = filter_by_genre(recommended_list_interaction, input_genres)
+
+
         # Content based model for content data
         content_time = time.time()
         print(f"interaction time : {content_time - interaction_time:.5f} sec")

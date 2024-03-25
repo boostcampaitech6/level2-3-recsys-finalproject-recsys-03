@@ -4,14 +4,13 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 
 
-def create_tag_list(sideinfo_data):
-    sideinfo_data['tags'] = sideinfo_data['tags'].apply(eval)
-    sideinfo_data['tag_list'] = sideinfo_data['tags'].apply(list)
+def create_tag_list(sideinfo_data,col):
+    sideinfo_data[col] = sideinfo_data[col].apply(eval)
     tags_set = set()
-    for tags in sideinfo_data['tags']:
+    for tags in sideinfo_data[col]:
         tags_set.update(tags)
 
-    tag_list = pd.DataFrame(tags_set, columns=['tag'])
+    tag_list = pd.DataFrame(tags_set, columns=[col])
     return tag_list
 
 
@@ -119,7 +118,7 @@ if __name__ == "__main__":
 
     # Tag embedding 생성
     sideinfo = pd.read_csv('../data/preprocessed_music5.csv', index_col=0)
-    tag_list = create_tag_list(sideinfo)
+    tag_list = create_tag_list(sideinfo,'tags')
     #tag_list.to_csv('../data/tag_list.csv')
     tag_embedded = tag_embedding(tag_list) # 3662개 : 30분
     tag_embedded.to_csv('../data/tag_embedded.csv')
