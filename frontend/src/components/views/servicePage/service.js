@@ -63,7 +63,7 @@ function Service(props) {
                 setUserUri(response.data.uri)
                 getTags(response.data.uri)
             }else{
-                alert('Fail to login')
+                alert('로그인에 문제가 생겨 로그인페이지로 이동합니다')
                 navigate('/')
             }
         })
@@ -76,10 +76,10 @@ function Service(props) {
         .then(response => {
             if(response.data.success){
                 console.log("succes to get tags")
-                console.log(response.data.tag_list)
                 setTags(response.data.tag_list)
             }else{
-                console.log('fail to get tags')
+                alert('페이지 로딩에 문제가 생겨 로그인페이지로 이동합니다')
+                navigate('/')
             }
         })
     }
@@ -105,21 +105,18 @@ function Service(props) {
 
     //추천 플레이리스트 가져오기
     const getPlaylist = (chat, user_uri, type) => {
-        if (chat == "" || chat == " "){
-            alert("Invalid input")
-            navigate('/')
-        } else {
-            console.log("get playlist")
-            axios.put('https://au-dionysos.com/api/recommend', {"chat": chat, "user_uri": user_uri, "type":type})
-            .then(response => {
-                if(response.data.success){
-                    console.log("succes to get playlist")
-                    setPlaylist(response.data.playlist)
-                }else{
-                    console.log('fail to get playlist')
-                }
-            })
-        }
+        console.log("get playlist")
+        axios.put('https://au-dionysos.com/api/recommend', {"chat": chat, "user_uri": user_uri, "type":type})
+        .then(response => {
+            if(response.data.success){
+                console.log("succes to get playlist")
+                setPlaylist(response.data.playlist)
+            }else{
+                //console.log('fail to get playlist')
+                alert('추천 시스템에 문제가 생겨 페이지를 새로고침합니다')
+                navigate('/service')
+            }
+        })
     }
 
     //챗 내용 저장
@@ -129,11 +126,15 @@ function Service(props) {
 
     const onSubmit = (event) => {
         event.preventDefault()   //prevent refreshing when click submit
-        setChatList(ChatList.concat(Chat))
-        localStorage.setItem("chat", Chat)
-        localStorage.setItem("chatList", ChatList)
-        getPlaylist(Chat, UserUri, "chat")
-        setChat("")
+        if (Chat == "" || Chat == " "){
+            alert("입력을 확인해주세요")
+        } else {
+            setChatList(ChatList.concat(Chat))
+            localStorage.setItem("chat", Chat)
+            localStorage.setItem("chatList", ChatList)
+            getPlaylist(Chat, UserUri, "chat")
+            setChat("")
+        }
     }
 
     return (

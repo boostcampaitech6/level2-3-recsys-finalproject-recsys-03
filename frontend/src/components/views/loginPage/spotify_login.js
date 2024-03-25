@@ -12,7 +12,13 @@ function Spotify_login(props) {
     let navigate = useNavigate()
     
     const handleLogin = () => {
-        window.location = `${SPOTIFY_AUTHORIZE_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URL}&scope=${SCOPES_PARAM}&response_type=token&show_dialog=true`
+        try{
+            window.location = `${SPOTIFY_AUTHORIZE_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URL}&scope=${SCOPES_PARAM}&response_type=token&show_dialog=true`
+        } catch(err){
+            alert("현재 스포티파이 로그인은 수동 등록이 필요합니다. 이용을 위해 운영진에게 연락 주세요.")
+            navigate('/')
+        }
+        
     }
 
     const guestLogin = () => {
