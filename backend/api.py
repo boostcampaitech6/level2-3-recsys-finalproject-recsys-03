@@ -170,6 +170,15 @@ async def recommend_tag(chatRequest:ChatRequest):
     start = time.time()
     chat = chatRequest.chat
     user_uri = chatRequest.user_uri
+    client = MongoClient(config.db_url)
+    db = client['playlist_recommendation']
+    user_chat_db = db['User_Chat']
+    
+    user_chat = {
+        'user': user_uri,
+        'chat' : chat
+    }
+    user_chat_db.insert_one(user_chat)
 
     df_tags = pd.read_csv('../data/tag_list.csv')
     # 최종적으로 올린 23000개 tag_list로 일단 작업해두겠습니당 (SBK)
