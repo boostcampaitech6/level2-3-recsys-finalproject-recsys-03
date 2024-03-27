@@ -75,7 +75,7 @@ async def login(token_info:Token):
                     if track:
                         tags = existing_user.get("tag_counts", {})
                         if tags is not None:
-                            for tag in track["tags"]:
+                            for tag in track["tags"]+track["genres"]:
                                 if tag in tags.keys():
                                     tags[tag]+=1
                                 else:
@@ -107,7 +107,7 @@ async def login(token_info:Token):
             if track_id!=-1:
                 listening_list.append(track_id)
                 listening_uri_list.append(track_uri)
-                counter.update(track["tags"])
+                counter.update(track["tags"]+track["genres"])
                     
             music = {
                 'uri':item['id'],
