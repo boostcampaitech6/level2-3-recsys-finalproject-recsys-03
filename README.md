@@ -9,11 +9,11 @@
 <br>
 <div align=center> 
  <img src="https://img.shields.io/badge/python-3776AB?style=flat&logo=python&logoColor=white"> 
- <img src="https://img.shields.io/badge/React-61DAFB?style=flat&logo=React&logoColor=black"> 
- <img src="https://img.shields.io/badge/node.js-339933?style=flat&logo=Node.js&logoColor=white">
  <img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=flat&logo=PyTorch&logoColor=white">
  <img src="https://img.shields.io/badge/FastAPI-009688?style=flat&logo=FastAPI&logoColor=white">
- <img src="https://img.shields.io/badge/mongoDB-47A248?style=flat&logo=MongoDB&logoColor=white">
+ <img src="https://img.shields.io/badge/mongoDB-47A248?style=flat&logo=MongoDB&logoColor=white"><br>
+ <img src="https://img.shields.io/badge/React-61DAFB?style=flat&logo=React&logoColor=black"> 
+ <img src="https://img.shields.io/badge/node.js-339933?style=flat&logo=Node.js&logoColor=white">
  <img src="https://img.shields.io/badge/Jira-0052CC?style=for-flat&logo=Jira&logoColor=white">
 </div>
 <br><br>
