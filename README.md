@@ -1,6 +1,6 @@
 <div align=center> 
   <img src="frontend/src/components/images/logo.png" alt="로고" width="200">
-  <h1> 초개인화 음악 추천 서비스 'Au-Dionysos' </h1>
+  <h1> 초개인화 음악 추천 서비스 'Au-Dionysos'🍷 </h1>
   <h3> Don't ruin my mood😜! </h3>
   Au-Dionysos는 당신의 상황, 감정, 취향을 반영한 플레이리스트를 생성해드립니다.<br>
   당신의 이야기를 들려주세요.<br>
