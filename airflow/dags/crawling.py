@@ -13,6 +13,7 @@ import time
 from pymongo import MongoClient
 import threading
 
+global secret
 def get_new_interaction_track():
     client = boto3.client('secretsmanager')
     response = client.get_secret_value(SecretId='prod/WebBeta/MongoDB')
@@ -45,7 +46,6 @@ def fetch_basic_info(headers, params):
     return basic_info
 
 def get_audio_features(uris: list):
-    global secret
     client = boto3.client('secretsmanager')
     response = client.get_secret_value(SecretId='prod/WebBeta/MongoDB')
     secret = json.loads(response['SecretString'])
