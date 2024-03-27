@@ -11,7 +11,6 @@ from tqdm import tqdm
 import time
 
 from pymongo import MongoClient
-from dataloader import get_new_interaction_track
 import threading
 
 def get_new_interaction_track():
