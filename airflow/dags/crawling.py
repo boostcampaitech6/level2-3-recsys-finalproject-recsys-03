@@ -10,8 +10,27 @@ import json
 from tqdm import tqdm
 import time
 
+from pymongo import MongoClient
 from dataloader import get_new_interaction_track
 import threading
+
+def get_new_interaction_track():
+    client = boto3.client('secretsmanager')
+    response = client.get_secret_value(SecretId='prod/WebBeta/MongoDB')
+    secret = json.loads(response['SecretString'])
+    mongodb_uri = secret['mongodb_uri']
+    
+    client = MongoClient(mongodb_uri)
+    db = client['playlist_recommendation']
+    collection = db['User']
+    
+    data = collection.find({})
+    new_track_uris = set()
+    for user in data:
+        for track_uri in user['new_track']:
+            new_track_uris.add(track_uri)    
+            
+    return list(new_track_uris)
 
 def fetch_audio_info(headers, params):
     audio_info = requests.get(f"https://api.spotify.com/v1/audio-features", headers=headers, params=params)
