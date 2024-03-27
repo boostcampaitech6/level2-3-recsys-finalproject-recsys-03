@@ -1,9 +1,10 @@
 <div align=center> 
   <img src="frontend/src/components/images/logo.png" alt="로고" width="200">
   <h1> 초개인화 음악 추천 서비스 'Au-Dionysos' </h1>
-  <h3> Don't ruin my mood! </h3>
+  <h3> Don't ruin my mood😜! </h3>
   Au-Dionysos는 당신의 상황, 감정, 취향을 반영한 플레이리스트를 생성해드립니다.<br>
-  당신의 이야기를 들려주세요. 저희는 당신에게 공감해 멋진 노래를 선물해드릴게요.  
+  당신의 이야기를 들려주세요.<br>
+  저희는 당신에게 공감해 멋진 노래🎶를 선물해드릴게요💝 
 </div>
 <br>
 <div align=center> 
@@ -17,42 +18,42 @@
 </div>
 <br><br>
 
-## 개요
+## 📌개요
 사용자의 취향을 담은 태그와 사용자의 감정과 상황을 담은 텍스트를 활용하여  
-취향 + 감정 + 상황을 모두 반영하는 개인 맞춤형 음악 추천 서비스
+취향 + 감정 + 상황을 모두 반영하는 개인 맞춤형 음악 추천 서비스🎧
 <br><br>
 ![Au-dionysos(로그인,1차배포)](https://github.com/boostcampaitech6/level2-3-recsys-finalproject-recsys-03/assets/43164670/f1fdee43-6274-4d03-a2c7-b7373233127e)
 <br><br><br>
 
-## 배경
-이른바 부캐의 시대. 한 사람의 내면 안에 시간, 장소, 상황에 따른 다양한 자아가 존재한다.  
-하지만 기존의 음악 스트리밍 서비스에서는 실시간으로 달라지는 취향과 니즈를 모두 반영하는 것은 어렵다.  
-그에 따라, 선곡 리스트, 유튜브 플레이리스트 등 누군가가 큐레이팅한 플레이리스트를 이용하는 사용자 증가하고 있다.  
+## ✏️배경
+이른바 부캐의 시대. 한 사람의 내면 안에 시간, 장소, 상황에 따른 다양한 자아가 존재합니다.  
+하지만 기존의 음악 스트리밍 서비스에서는 실시간으로 달라지는 취향과 니즈를 모두 반영하는 것은 어렵습니다.  
+그에 따라, 선곡 리스트, 유튜브 플레이리스트 등 누군가가 큐레이팅한 플레이리스트를 이용하는 사용자들이 증가하고 있습니다.  
 <br><br>
 
-## 기대효과
+## 💬기대효과
 - 사용자의 감정과 상황 정확하고 세세하게 반영
 - 초개인화 경험 제공
 - 사용자의 시간 절약
 - 사용자의 serendipity 실현
 <br><br>
 
-## 서비스 아키텍처
+## 📚서비스 아키텍처
 <img width="794" alt="서비스 아키텍처" src="https://github.com/boostcampaitech6/level2-3-recsys-finalproject-recsys-03/assets/90895797/b1e0b218-53c3-422c-ba03-84245d4a30f3">
 <br><br>
 
-## 데이터베이스 구조
+## 📚데이터베이스 구조
 <img src="frontend/src/components/images/structure.png" alt="데이터베이스 구조">
 <br>
 
-## 모델 아키텍처
+## 📚모델 아키텍처
 <div align=center> 
 <img width="500" alt="모델 아키텍처" src="https://github.com/boostcampaitech6/level2-3-recsys-finalproject-recsys-03/assets/90895797/a66e4889-3431-4410-9730-806556ba4f63">
 </div>
 <br>
 
 
-## 팀 소개
+## ✨팀 소개
 <br>
 <table align="left">
   <tr height="155px">
@@ -99,7 +100,7 @@
 &nbsp;
 <br>
 
-## 역할
+## 📓역할
 
 | 이름 | 역할 |
 | --- | --- |
@@ -112,16 +113,16 @@
 <br>
 
 
-## 프로젝트 타임라인
+## 📆프로젝트 타임라인
 
 
 <br><br>
 
-## 추가 자료
-- [서비스](https://au-dionysos.com/) (2024.04.16까지 운영 예정)  
-- [발표 영상]()  
-- [발표 자료]()  
-- [시연 영상]()  
-- [리포트]()  
+## 📁추가 자료
+- 🔗[서비스](https://au-dionysos.com/) (2024.04.16까지 운영 예정)  
+- 🎦[발표 영상]()  
+- 🔗[발표 자료]()  
+- 🎦[시연 영상]()  
+- 🔗[리포트]()  
 
 <br>
