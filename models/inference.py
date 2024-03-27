@@ -1,7 +1,7 @@
 import time
 import pandas as pd
 from models.inference_graphsage import inference_graphsage
-from models.filtering import filter_by_genre, filter_tags_by_input
+from models.filtering import filter_by_genre, filter_tags_by_input, load_info
 
 def load_data():
 
