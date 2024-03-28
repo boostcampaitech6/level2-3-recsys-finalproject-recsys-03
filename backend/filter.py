@@ -4,7 +4,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 import pandas as pd
 import time
-from config import config
+from backend.config import config
 
 # tags = ['사랑', '고통', '의도', '위로', '진실', '솔직함', '고난', '자아성찰', '자기계발', '희망']
 
@@ -48,8 +48,8 @@ def filter_model(question, tag_list):
     print(result)
     
     # result 예시 : content="['sad', 'emotional', 'melancholy', 'reflective', 'introspective']" response_metadata={'finish_reason': 'stop', 'logprobs': None}
-    start = result.find("['")
-    end = result.find("']") + 2  
+    start = result.find("[")
+    end = result.find("]") + 1  
     
     # result에서 list만 추출
     extracted_result_str = result[start:end]
