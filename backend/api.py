@@ -210,7 +210,6 @@ async def recommend_tag(chatRequest:ChatRequest):
         item['uri'] = "spotify:track:" + item['uri']
     
     
-    
     client = MongoClient(config.db_url)
     db = client['playlist_recommendation']
     user_chat_db = db['User_Chat']
