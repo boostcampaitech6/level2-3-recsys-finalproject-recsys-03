@@ -23,7 +23,7 @@ function InfoList(props) {
                 {props.playlists.length > index+1 &&
                     <div className='service_chat'>
                         <p className='sender'>Chat</p>
-                        <Playlist playlist={props.playlists[index+1]} login={props.login}/>
+                        <Playlist playlist={props.playlists[index+1]} login={props.login} user_uri={props.user_uri}/>
                     </div>
                 }
                 {(props.playlists.length > index+1 && !props.login) &&

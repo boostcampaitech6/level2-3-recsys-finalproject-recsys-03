@@ -9,6 +9,7 @@ class Token(BaseModel):
 class ChatRequest(BaseModel):
     chat:str
     user_uri:str
+    type:str
 
 class Track(BaseModel):
     title:str

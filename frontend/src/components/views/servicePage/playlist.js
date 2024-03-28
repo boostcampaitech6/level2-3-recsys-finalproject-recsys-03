@@ -123,7 +123,7 @@ function Playlist(props) {
             <div className='playlist_content'>
                 {playlist_song}
             </div>
-            <Export playlist={Playlist} login={props.login}/>
+            <Export playlist={Playlist} login={props.login} user_uri={props.user_uri}/>
         </div>
     )
 

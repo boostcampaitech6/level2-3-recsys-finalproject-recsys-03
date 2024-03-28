@@ -19,9 +19,10 @@
 .login button {
     display: flex;
     align-items:center;
-    border-radius: 20px;
+    text-align: center;
+    border-radius: 25px;
     margin: 0px 20px 0px 0px; 
-    padding: 3px 15px;
+    padding: 5px 18px;
     background-color: #9290C3;
     border: 2px solid #535C91;
     color: #1B1A55;

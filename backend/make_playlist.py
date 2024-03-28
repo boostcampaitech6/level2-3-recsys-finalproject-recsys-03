@@ -26,13 +26,18 @@ def find_document_by_uri(uri):
         tracks_df = pd.DataFrame(data)
         return tracks_df
 
-def make_playlist(question, uri, tag_list):
+def make_playlist(question, uri, tag_list, type):
     start = time.time()
     # 유저 시청 이력 수집
     login_user_data = find_document_by_uri(uri)
     # 채팅 입력 -> 적합한 태그 5개 선택
-    # print(tag_list)
-    input_tag = ', '.join(filter_model(question, tag_list))
+
+    if type=="chat":
+        input_tag = ', '.join(filter_model(question, tag_list))
+    elif type=="tag":
+        input_tag = question
+    print(input_tag)
+
     middle = time.time()
     song_list = inference(login_user_data, input_tag)
     end = time.time()
