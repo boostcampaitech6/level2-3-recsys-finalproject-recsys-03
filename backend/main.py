@@ -28,7 +28,31 @@ origins = [
     "https://api.spotify.com/v1/"
 ]
 
-app = FastAPI()
+model_pt = None
+data = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Start Up Event")
+    # global 변수 설정
+    global model_pt, data
+    
+    model_pt = ???
+    data = ???
+    
+    # 이전은 앱 시작 전 동작
+    yield
+    # 이후는 앱 종료 때 동작
+    
+    print("Shutdown Event!")
+    # PyTorch 모델은 직접적인 메모리 해제 함수가 없음, 모델과 데이터에 None을 할당하여 참조 제거
+    model_pt = None
+    data = None
+    
+
+app = FastAPI(lifespan = lifespan)
+
+
 app.add_middleware(SessionMiddleware, secret_key="some-secret-key")
 app.add_middleware(
     CORSMiddleware,
