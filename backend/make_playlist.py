@@ -25,6 +25,8 @@ def find_document_by_uri(uri):
             data.append({'user_id': user_id, 'track_id': track})
         tracks_df = pd.DataFrame(data)
         return tracks_df
+    else:
+        return None
 
 def make_playlist(question, uri, tag_list):
     start = time.time()
