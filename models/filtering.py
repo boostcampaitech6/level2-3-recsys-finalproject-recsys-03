@@ -12,7 +12,7 @@ def load_info(recommended_track_id,sideinfo_data):
     #sideinfo_data['tag_string'] = sideinfo_data['tags'].apply(lambda x: ' '.join(string_to_list(x)))   
     # recommended_list : recommended_track_id에 side info 추가
     recommended_track = pd.DataFrame(recommended_track_id, columns=['track_id'])
-    recommended_list = pd.merge(recommended_track, sideinfo_data[['track_id', 'track_name', 'artist_name', 'tags', 'genres', 'uri']], on='track_id', how='left')
+    recommended_list = pd.merge(recommended_track, sideinfo_data[['track_id', 'track_name', 'artist_name', 'tag_name_list', 'genres', 'uri']], on='track_id', how='left')
     return recommended_list
    
     

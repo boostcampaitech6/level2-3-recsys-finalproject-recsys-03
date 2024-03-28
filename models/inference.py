@@ -6,7 +6,7 @@ from models.filtering import filter_by_genre, filter_tags_by_input, load_info
 
 def load_data():
 
-    sideinfo_data = pd.read_csv('../data/preprocessed_music5.csv', index_col=0)
+    sideinfo_data = pd.read_csv('../data/track_inference.csv')
 
     return sideinfo_data
 
@@ -64,7 +64,7 @@ def inference(login_user_data, input_tags):
         recommended_list_filtered_content = recommended_list_filtered_content['track_id'].to_list()
         
         # track_with_interaction과 track_without_interaction이 균형있게 필터링된 경우
-        if len(recommended_list_filtered_interaction) >= 10 and len(recommended_list_filtered_content) >= 10:
+        if len(recommended_list_filtered_interaction) >= 10 and len(recommended_list_filtered_content) >= 10 and len(login_user_data_interaction) >= 1 and len(login_user_data_content) >= 1:
             # cf model
             track_emb, mapping_index_track, mapping_track_index, graph_data = load_data_for_cf_model(login_user_data_interaction)
             updated_graph_data, new_user_id = update_user_graph_data(graph_data, login_user_data_interaction, track_emb, mapping_track_index)
@@ -81,7 +81,7 @@ def inference(login_user_data, input_tags):
             recommended_playlist = recommended_list_shuffled
         
         # track_with_interaction이 주로 필터링된 경우
-        elif len(recommended_list_filtered_content) < 10:
+        elif len(recommended_list_filtered_interaction) >= 20 and len(login_user_data_interaction) >= 1:
             # cf model
             track_emb, mapping_index_track, mapping_track_index, graph_data = load_data_for_cf_model(login_user_data_interaction)
             updated_graph_data, new_user_id = update_user_graph_data(graph_data, login_user_data_interaction, track_emb, mapping_track_index)
@@ -90,12 +90,17 @@ def inference(login_user_data, input_tags):
             recommended_playlist = recommended_list_cf
         
         # track_without_interaction이 주로 필터링된 경우
-        elif len(recommended_list_filtered_interaction) < 10:
+        elif len(recommended_list_filtered_content) >= 20 and len(login_user_data_content) >= 1:
             # cbf model
             mapping_index_track, mapping_track_index, graph_data = load_data_for_cbf_model()
             embeddings = load_cbf_model(graph_data)
             recommended_list_cbf = inference_cbf_model(20, login_user_data_content, recommended_list_filtered_content, mapping_index_track, mapping_track_index, embeddings)
             recommended_playlist = recommended_list_cbf
+        
+        else:
+            # user 정보를 사용하지 못하는 경우에 tag_model만 사용
+            recommended_playlist = recommended_list_filtered[:20]
+            recommended_playlist = recommended_playlist['track_id'].to_list()
 
     # recommended track list -> dictionary
     recommended_playlist_info = load_info(recommended_playlist, sideinfo_data)
