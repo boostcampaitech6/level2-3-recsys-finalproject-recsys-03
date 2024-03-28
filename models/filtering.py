@@ -7,30 +7,25 @@ def string_to_list(s):
         return ast.literal_eval(s)
     except ValueError:
         return []
-    
-def tag_ranking_load_data(recommended_track_id,sideinfo_data):
-    sideinfo_data['tag_string'] = sideinfo_data['tags'].apply(lambda x: ' '.join(string_to_list(x)))   
+
+def load_info(recommended_track_id,sideinfo_data):
+    #sideinfo_data['tag_string'] = sideinfo_data['tags'].apply(lambda x: ' '.join(string_to_list(x)))   
     # recommended_list : recommended_track_id에 side info 추가
     recommended_track = pd.DataFrame(recommended_track_id, columns=['track_id'])
-    recommended_list = pd.merge(recommended_track, sideinfo_data[['track_id', 'track_name', 'artist_name', 'tag_string', 'uri']], on='track_id', how='left')
+    recommended_list = pd.merge(recommended_track, sideinfo_data[['track_id', 'track_name', 'artist_name', 'tag_name_list', 'genres', 'uri']], on='track_id', how='left')
     return recommended_list
    
     
 def tag_ranking(recommended_list, input_tags, N):
-    # 입력 태그를 쉼표를 기준으로 분할하여 단어 추출
     input_words = [word.strip() for word in input_tags.split(',')]
-    # 각 문서에 대해 입력 태그와 일치하는 태그만 선택하여 추출
     selected_tags = []
     for track_tags in recommended_list['tag_string']:
         selected_tags.append(' '.join(word for word in input_words if word in track_tags.split()))
-    # 각 문서에 대해 입력 태그와 일치하는 단어의 수 계산
     similarity_scores = [(track_id, track_name, artist_name, uri, selected_tag, sum(word in selected_tag.split() for word in input_words))
                          for track_id, track_name, artist_name, uri, selected_tag in zip(recommended_list['track_id'], recommended_list['track_name'], recommended_list['artist_name'], recommended_list['uri'], selected_tags)]
-    # 유사도를 기준으로 내림차순 정렬
     similarity_scores.sort(key=lambda x: x[5], reverse=True)
-    # 상위 N개의 추천 곡 정보를 리스트로 저장
     recommended_tracks = similarity_scores[:N]
-    # 추천 곡 정보를 각각의 리스트로 분리하여 반환
+
     recommended_ids = [track[0] for track in recommended_tracks]
     recommended_titles = [track[1] for track in recommended_tracks]
     recommended_artists = [track[2] for track in recommended_tracks]
@@ -45,7 +40,6 @@ def genre_export(login_user_data_content,sideinfo_data,tag_genre_list):
 
     genre_tags_set = set(tag_genre_list['Genre Tags'].str.lower().apply(lambda x: x.split()).explode())
 
-    # Filter tag_list in login_user_data_content_sideinfo based on genre_tags_set
     login_user_data_content_sideinfo['genre_list'] = login_user_data_content_sideinfo['tag_list'].apply(
         lambda tags: [tag for tag in tags if tag in genre_tags_set]
     )
@@ -58,3 +52,27 @@ def genre_filtering(genre_preferred,song_embedded):
 
     filtered_songs = song_embedded[song_embedded['tags'].str.contains(pattern, flags=re.IGNORECASE, na=False)]
     return filtered_songs
+
+# input tags
+def filter_by_genre(song_list, input_genres):
+    if not input_genres:
+        return song_list
+    song_list['genres_list'] = song_list['genres'].apply(eval)
+    filtered_list = song_list[song_list['genres_list'].apply(lambda genres: any(genre in genres for genre in input_genres))]
+    return filtered_list
+
+def create_genre_list(sideinfo_data,col):
+    sideinfo_data[col] = sideinfo_data[col].apply(eval)
+    tags_set = set()
+    for tags in sideinfo_data[col]:
+        tags_set.update(tags)
+
+    tag_list = pd.DataFrame(tags_set, columns=[col])
+    return tag_list
+
+def filter_tags_by_input(sideinfo_data, input_tags):
+    input_tags_list = input_tags.split(', ')
+    unique_genres_df = create_genre_list(sideinfo_data, 'genres')
+    filtered_tags = unique_genres_df[unique_genres_df['genres'].isin(input_tags_list)]
+    filtered_tags_list = filtered_tags['genres'].tolist()
+    return filtered_tags_list
