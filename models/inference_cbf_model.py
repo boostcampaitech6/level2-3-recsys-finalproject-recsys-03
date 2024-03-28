@@ -42,11 +42,9 @@ def inference_cbf_model(k, input_track_list, candidate_track_list, mapping_index
     return recommend_track_list
 
 
-def load_data_for_cbf_model(args):
-    # track 정보
-    track = pd.read_csv(f'{args.data_dir}{args.track_filename}', usecols=['track_id','track_name','artist_name','tag_name_list'])
-    track = track[['track_id','track_name','artist_name','tag_name_list']]
-
+def load_data_for_cbf_model():
+    args = parse_args()    # 파라미터 로드
+    
     # track index mapping 정보 로드
     with open(f'{args.data_dir}mapping_{args.model_name}_index_track.json', 'r') as f:
         mapping_index_track = json.load(f)
@@ -56,10 +54,11 @@ def load_data_for_cbf_model(args):
     # 그래프 데이터 로드
     graph_data = torch.load(f'{args.data_dir}{args.graph_filename}')
 
-    return track, mapping_index_track, mapping_track_index, graph_data
+    return mapping_index_track, mapping_track_index, graph_data
 
 
-def load_cbf_model(args, graph_data):
+def load_cbf_model(graph_data):
+    args = parse_args()    # 파라미터 로드
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')    # GPU 설정
     
     # 모델 로드
@@ -84,7 +83,9 @@ def main():
     input_track_list = input_data['track_id'][input_data['track_id'] >= 49707345].to_list()
     
     # 데이터 로드
-    track, mapping_index_track, mapping_track_index, graph_data = load_data_for_cbf_model(args)
+    track = pd.read_csv(f'{args.data_dir}{args.track_filename}', usecols=['track_id','track_name','artist_name','tag_name_list'])
+    track = track[['track_id','track_name','artist_name','tag_name_list']]
+    mapping_index_track, mapping_track_index, graph_data = load_data_for_cbf_model()
     
     # 데이터 소요 시간
     data_time = time.time()
@@ -92,7 +93,7 @@ def main():
     print(f'Data Loading : {elapsed_time:.2f}s')
     
     # 모델 로드 & 임베딩
-    embeddings = load_cbf_model(args, graph_data)
+    embeddings = load_cbf_model(graph_data)
     
     # 모델 소요 시간
     model_time = time.time()

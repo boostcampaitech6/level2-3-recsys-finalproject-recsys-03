@@ -10,7 +10,7 @@ def load_data():
 
     return sideinfo_data
 
-def inference(login_user_data, input_tags):   
+def inference(login_user_data, input_tags):
     
     '''
     #input type example:
@@ -21,38 +21,83 @@ def inference(login_user_data, input_tags):
     input_tag_list = input_tags.split(', ')
     recommended_playlist_dict = []  # 최종 추천 결과
 
-    if login_user_data.empty or login_user_data is None:  # track list가 없는 유저 (비회원)
-        recommended_list = inference_tag_model(k=100, input_tag_list=input_tag_list)
+    # track list가 없는 유저 (비회원)
+    if login_user_data.empty or login_user_data is None:
+        # tag_model
+        mapping_index_track, mapping_tag_index, graph_data = load_data_for_tag_model()
+        embeddings = load_tag_model(graph_data)
+        recommended_list = inference_tag_model(100, input_tag_list, mapping_index_track, mapping_tag_index, embeddings)
+        
+        # genre filtering
         recommended_list_info = load_info(recommended_list, sideinfo_data)  # Track list에 info(title,artist...)추가
         input_genres = filter_tags_by_input(sideinfo_data, input_tags)  # input_genres : input tags에 있는 genre tags
         recommended_list_filtered = filter_by_genre(recommended_list_info, input_genres)  # input_genres에 있는 장르만 남기기
         recommended_playlist = recommended_list_filtered[:20]
-
-    else:  # track list가 있는 유저 (회원)
-        login_user_data = login_user_data.merge(sideinfo_data[['track_id','interaction_exist']], how='left', left_on='track_id', right_on='track_id')
-        login_user_data_interaction = login_user_data[login_user_data['interaction_exist'] == 1].drop('interaction_exist', axis=1)
-        login_user_data_content = login_user_data[login_user_data['interaction_exist'] == 0].drop('interaction_exist', axis=1)
-
-        recommended_list = inference_tag_model(k=100, input_tag_list=input_tag_list)
+        recommended_playlist = recommended_playlist['track_id'].to_list()
+        
+    # track list가 있는 유저 (회원)
+    else:
+        # tag_model
+        mapping_index_track, mapping_tag_index, graph_data = load_data_for_tag_model()
+        embeddings = load_tag_model(graph_data)
+        recommended_list = inference_tag_model(100, input_tag_list, mapping_index_track, mapping_tag_index, embeddings)
+        
+        # genre filtering
         recommended_list_info = load_info(recommended_list, sideinfo_data)
         input_genres = filter_tags_by_input(sideinfo_data, input_tags)
         recommended_list_filtered = filter_by_genre(recommended_list_info, input_genres)
         
-        if not login_user_data_interaction.empty and not login_user_data_content.empty:  # track_with_interaction과 track_without_interaction이 동시에 있는 유저
-            recommended_list_cf = inference_cf_model(k=10, candidate_track_list=recommended_list_filtered)
-            recommended_list_cbf = inference_cbf_model(k=10, candidate_track_list=recommended_list_filtered)
+        # user가 선호하는 track 분류 (with_interaction / without_interaction)
+        login_user_data = login_user_data.merge(sideinfo_data[['track_id','interaction_exist']], how='left', left_on='track_id', right_on='track_id')
+        login_user_data_interaction = login_user_data[login_user_data['interaction_exist'] == 1].drop('interaction_exist', axis=1)
+        login_user_data_content = login_user_data[login_user_data['interaction_exist'] == 0].drop('interaction_exist', axis=1)
+        # 리스트로 변경
+        login_user_data_interaction = login_user_data_interaction['track_id'].to_list()
+        login_user_data_content = login_user_data_content['track_id'].to_list()
+
+        # tag, genre filtered track 분류 (with_interaction / without_interaction)
+        recommended_list_filtered = recommended_list_filtered.merge(sideinfo_data[['track_id','interaction_exist']], how='left', left_on='track_id', right_on='track_id')
+        recommended_list_filtered_interaction = recommended_list_filtered[recommended_list_filtered['interaction_exist'] == 1].drop('interaction_exist', axis=1)
+        recommended_list_filtered_content = recommended_list_filtered[recommended_list_filtered['interaction_exist'] == 0].drop('interaction_exist', axis=1)
+        # 리스트로 변경
+        recommended_list_filtered_interaction = recommended_list_filtered_interaction['track_id'].to_list()
+        recommended_list_filtered_content = recommended_list_filtered_content['track_id'].to_list()
+        
+        # track_with_interaction과 track_without_interaction이 균형있게 필터링된 경우
+        if len(recommended_list_filtered_interaction) >= 10 and len(recommended_list_filtered_content) >= 10:
+            # cf model
+            track_emb, mapping_index_track, mapping_track_index, graph_data = load_data_for_cf_model(login_user_data_interaction)
+            updated_graph_data, new_user_id = update_user_graph_data(graph_data, login_user_data_interaction, track_emb, mapping_track_index)
+            embeddings = load_cf_model(updated_graph_data)
+            recommended_list_cf = inference_cf_model(10, recommended_list_filtered_interaction, mapping_index_track, mapping_track_index, embeddings, new_user_id)
+            
+            # cbf model
+            mapping_index_track, mapping_track_index, graph_data = load_data_for_cbf_model()
+            embeddings = load_cbf_model(graph_data)
+            recommended_list_cbf = inference_cbf_model(10, login_user_data_content, recommended_list_filtered_content, mapping_index_track, mapping_track_index, embeddings)
+
+            # cf 결과 + cbf 결과
             recommended_list_shuffled = [item for pair in zip(recommended_list_cbf, recommended_list_cf) for item in pair]
             recommended_playlist = recommended_list_shuffled
-
-        elif login_user_data_interaction.empty:  # track_without_interaction만 있는 유저
-            recommended_list_cbf = inference_cbf_model(k=20, candidate_track_list=recommended_list_filtered)
+        
+        # track_with_interaction이 주로 필터링된 경우
+        elif len(recommended_list_filtered_content) < 10:
+            # cf model
+            track_emb, mapping_index_track, mapping_track_index, graph_data = load_data_for_cf_model(login_user_data_interaction)
+            updated_graph_data, new_user_id = update_user_graph_data(graph_data, login_user_data_interaction, track_emb, mapping_track_index)
+            embeddings = load_cf_model(updated_graph_data)
+            recommended_list_cf = inference_cf_model(20, recommended_list_filtered_interaction, mapping_index_track, mapping_track_index, embeddings, new_user_id)
+            recommended_playlist = recommended_list_cf
+        
+        # track_without_interaction이 주로 필터링된 경우
+        elif len(recommended_list_filtered_interaction) < 10:
+            # cbf model
+            mapping_index_track, mapping_track_index, graph_data = load_data_for_cbf_model()
+            embeddings = load_cbf_model(graph_data)
+            recommended_list_cbf = inference_cbf_model(20, login_user_data_content, recommended_list_filtered_content, mapping_index_track, mapping_track_index, embeddings)
             recommended_playlist = recommended_list_cbf
 
-        elif login_user_data_content.empty:  # track_with_interaction만 있는 유저
-            recommended_list_cf = inference_cf_model(k=20, candidate_track_list=recommended_list_filtered)
-            recommended_playlist = recommended_list_cf
-
-
+    # recommended track list -> dictionary
     recommended_playlist_info = load_info(recommended_playlist, sideinfo_data)
     for i in range(len(recommended_playlist_info)):
         track_info = {
@@ -64,4 +109,3 @@ def inference(login_user_data, input_tags):
         recommended_playlist_dict.append(track_info)
 
     return recommended_playlist_dict
-
