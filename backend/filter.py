@@ -4,7 +4,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 import pandas as pd
 import time
-from config import config
+from backend.config import config
 
 # tags = ['사랑', '고통', '의도', '위로', '진실', '솔직함', '고난', '자아성찰', '자기계발', '희망']
 

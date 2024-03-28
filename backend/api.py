@@ -209,7 +209,7 @@ async def recommend_tag(chatRequest:ChatRequest):
     
     playlist = make_playlist(chat, user_uri, tags, type)
     
-    for item in playlist:
+    for item in playlist[0]:
         item['uri'] = "spotify:track:" + item['uri']
     
     
@@ -220,7 +220,7 @@ async def recommend_tag(chatRequest:ChatRequest):
     user_chat = {
         'user': user_uri,
         'chat' : chat,
-        'tag' : input_tags
+        #'tag' : input_tags
     }
     user_chat_db.insert_one(user_chat)
     print(user_chat)
@@ -228,7 +228,8 @@ async def recommend_tag(chatRequest:ChatRequest):
     # print(playlist)
     end = time.time()
     print(f"{end - start:.5f} sec")
-    return JSONResponse(content={"success": True, "playlist": playlist})
+    print(playlist)
+    return JSONResponse(content={"success": True, "playlist": playlist[0]})
 
 # TODO test
 # @router.get('/refresh')
