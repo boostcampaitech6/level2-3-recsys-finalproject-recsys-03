@@ -75,7 +75,7 @@ async def login(token_info:Token):
                     if track:
                         tags = existing_user.get("tag_counts", {})
                         if tags is not None:
-                            for tag in track["tags"]:
+                            for tag in track["tags"]+track["genres"]:
                                 if tag in tags.keys():
                                     tags[tag]+=1
                                 else:
@@ -107,7 +107,7 @@ async def login(token_info:Token):
             if track_id!=-1:
                 listening_list.append(track_id)
                 listening_uri_list.append(track_uri)
-                counter.update(track["tags"])
+                counter.update(track["tags"]+track["genres"])
                     
             music = {
                 'uri':item['id'],
@@ -196,16 +196,6 @@ async def recommend_tag(chatRequest:ChatRequest):
     user_uri = chatRequest.user_uri
     type = chatRequest.type
 
-    client = MongoClient(config.db_url)
-    db = client['playlist_recommendation']
-    user_chat_db = db['User_Chat']
-    
-    user_chat = {
-        'user': user_uri,
-        'chat' : chat
-    }
-    user_chat_db.insert_one(user_chat)
-
     df_tags = pd.read_csv('../data/tag_list.csv')
     # 최종적으로 올린 23000개 tag_list로 일단 작업해두겠습니당 (SBK)
     tags = df_tags.tag
@@ -216,10 +206,25 @@ async def recommend_tag(chatRequest:ChatRequest):
     #     playlist.append(track)
     # if not titles:
     #     return JSONResponse(content={"success": False, "message": "Can't get recommend result"})
+    
     playlist = make_playlist(chat, user_uri, tags, type)
+    
     for item in playlist:
         item['uri'] = "spotify:track:" + item['uri']
-        
+    
+    
+    
+    client = MongoClient(config.db_url)
+    db = client['playlist_recommendation']
+    user_chat_db = db['User_Chat']
+    user_chat = {
+        'user': user_uri,
+        'chat' : chat,
+        'tag' : input_tags
+    }
+    user_chat_db.insert_one(user_chat)
+    print(user_chat)
+    
     # print(playlist)
     end = time.time()
     print(f"{end - start:.5f} sec")

@@ -8,3 +8,6 @@ __pycache__
 .env
 *.csv
 *.json
+*.pt
+models/model/GraphSAGE.pt
+models/model/graphsage.pt
