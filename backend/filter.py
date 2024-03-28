@@ -8,7 +8,7 @@ from config import config
 
 # tags = ['사랑', '고통', '의도', '위로', '진실', '솔직함', '고난', '자아성찰', '자기계발', '희망']
 
-def filter_model(question, tag_list):
+def filter_model(question, tag, genres, artists):
     llm = ChatOpenAI(openai_api_key=config.open_ai_api_key)
     
     propmt_message_1 =  """ 1. 당신은 문장이나 단어에서 태그를 추출하는 태그 추출기가 됩니다. 선택할 수 있는 태그 후보 맨 아래에 드리겠습니다.
@@ -18,13 +18,19 @@ def filter_model(question, tag_list):
     5. kpop, pop, rock 등의 장르나 artist name에 대해서는 높은 가중치를 주면 됩니다!
     6. 만일 아무런 문장을 받지 않을 경우 무작위로 선택해서 보내주세요.
     """
-    propmt_message_2 = str(tag_list)
-    # 너는 사람이 입력한 문장을 읽고 난 뒤에, 문장의 상황과 감정, 분위기에 가장 어울리는 Tag를 뒤에 내가 주는 리스트에서 5개 정도 골라서 나한테 'python의 리스트 형태'로 돌려주면 돼." + str(tag_list)
+    propmt_message_2 = str(tag) + """ 
+    Appendix. 다음은 태그 리스트입니다. ./
+    """
+    propmt_message_3 = str(genres) + """
+    Appendix2. 다음은 우선 고려대상인 장르 리스트입니다. ./
+    """
     
-    # print(tag_list)
+    propmt_message_4 = str(artists) + """
+    Appendix3. 다음은 우선 고려대상인 아티스트 리스트입니다. 
+    """
     
     prompt = ChatPromptTemplate.from_messages([
-        ("system", propmt_message_1 + propmt_message_2),
+        ("system", propmt_message_1 + propmt_message_2 + propmt_message_3 + propmt_message_4),
         ("user", "{input}")
     ])
     

@@ -211,7 +211,7 @@ async def recommend_tag(chatRequest:ChatRequest):
     #     playlist.append(track)
     # if not titles:
     #     return JSONResponse(content={"success": False, "message": "Can't get recommend result"})
-    playlist = make_playlist(chat, user_uri, type, tags, genres, artists)
+    playlist, input_tags = make_playlist(chat, user_uri, type, tags, genres, artists)
     
     for item in playlist:
         item['uri'] = "spotify:track:" + item['uri']
