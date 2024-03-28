@@ -196,18 +196,22 @@ async def recommend_tag(chatRequest:ChatRequest):
     user_uri = chatRequest.user_uri
     type = chatRequest.type
 
-    df_tags = pd.read_csv('../data/tag_list.csv')
-    # 최종적으로 올린 23000개 tag_list로 일단 작업해두겠습니당 (SBK)
-    tags = df_tags.tag
-
+    # 태그 리스트 (context tag, genre tag, artist tag)
+    df_tags = pd.read_csv('../data/tag_context.csv', usecols=['tag_name'])
+    df_genres = pd.read_csv('../data/tag_genre.csv', usecols=['tag_name'])
+    df_artists = pd.read_csv('../data/artist_context.csv', usecols=['artist_name'])
+    genres = df_genres['tag_name'].to_list()    # genre tags
+    tags_all = df_tags['tag_name'].to_list()    # all tags
+    tags = [tag for tag in tags_all if tag not in genres]    # all tags - genre tags
+    artists = df_artists['artist_name'].to_list()    # artist tags
+    
     # titles, artists, uris = make_playlist(chat, tags)
     # for title, artist, uri in zip(titles, artists, uris):
     #     track = Track(title=title, artist=artist, uri=uri).model_dump()
     #     playlist.append(track)
     # if not titles:
     #     return JSONResponse(content={"success": False, "message": "Can't get recommend result"})
-    
-    playlist = make_playlist(chat, user_uri, tags, type)
+    playlist = make_playlist(chat, user_uri, type, tags, genres, artists)
     
     for item in playlist:
         item['uri'] = "spotify:track:" + item['uri']

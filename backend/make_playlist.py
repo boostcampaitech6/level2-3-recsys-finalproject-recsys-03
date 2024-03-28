@@ -28,7 +28,7 @@ def find_document_by_uri(uri):
     else:
         return None
 
-def make_playlist(question, uri, tag_list, type):
+def make_playlist(question, uri, type, tag_list):
     start = time.time()
     # 유저 시청 이력 수집
     login_user_data = find_document_by_uri(uri)
