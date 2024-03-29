@@ -35,7 +35,9 @@ def make_playlist(question, uri, type, tags, genres, artists):
     # 채팅 입력 -> 적합한 태그 5개 선택
 
     if type=="chat":
-        input_tag = ', '.join(filter_model(question, tags, genres, artists))
+        #input_tag = ', '.join(filter_model(question, tags, genres, artists))
+        prompt_tags = filter_model(question, tags, genres, artists)
+        input_tag = ', '.join([tag for tag in prompt_tags if tag in tags+genres+artists])
     elif type=="tag":
         input_tag = question
 

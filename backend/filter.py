@@ -11,26 +11,40 @@ from config import config
 def filter_model(question, tag, genres, artists):
     llm = ChatOpenAI(openai_api_key=config.open_ai_api_key)
     
-    propmt_message_1 =  """ 1. 당신은 문장이나 단어에서 태그를 추출하는 태그 추출기가 됩니다. 선택할 수 있는 태그 후보 맨 아래에 드리겠습니다.
-    2. 사람이 쓴 문장을 드릴 테니 읽어보시고, 태그 후보 목록에서 화자의 상황, 감정, 기분, 맥락에 가장 잘 맞는 5개의 태그를 고르시면 됩니다.
-    3. 태그나 단어를 받은 경우, 반드시 결과물에 태그가 포함되어 있어야 합니다.
-    4. 5개의 태그를 선택할 수 있으며 반드시 파이썬의 List 형태로 반환해야 합니다!
-    5. kpop, pop, rock 등의 장르나 artist name에 대해서는 높은 가중치를 주면 됩니다!
-    6. 만일 아무런 문장을 받지 않을 경우 무작위로 선택해서 보내주세요.
+    # prompt_message_1 =  """ 1. 당신은 문장이나 단어에서 태그를 추출하는 태그 추출기가 됩니다. 선택할 수 있는 태그 후보 맨 아래에 드리겠습니다.
+    # 2. 사람이 쓴 문장을 드릴 테니 읽어보시고, 태그 후보 목록에서 화자의 상황, 감정, 기분, 맥락에 가장 잘 맞는 5개의 태그를 고르시면 됩니다.
+    # 3. 태그나 단어를 받은 경우, 반드시 결과물에 태그가 포함되어 있어야 합니다.
+    # 4. 5개의 태그를 선택할 수 있으며 반드시 파이썬의 List 형태로 반환해야 합니다!
+    # 5. kpop, pop, rock 등의 장르나 artist name에 대해서는 높은 가중치를 주면 됩니다!
+    # 6. 만일 아무런 문장을 받지 않을 경우 무작위로 선택해서 보내주세요.
+    # 7. 생성되는 5개의 태그는 밑에 있는 Appendix, Appendix2, Appendix3의 리스트에 포함되어있어야합니다.
+    # """
+
+    prompt_message_1 = """
+    너는 앞으로 주어진 텍스트로부터 반드시 Appendix, Appendix2, Appendix3 리스트 내에 속하는 태그 중 화자의 장르, 아티스트, 상황, 감정, 기분, 맥락에 가장 잘 맞는 6개의 태그를 담은 
+    파이썬의 list 형태로 반환해줘. 만약에 장르나 아티스트 이름에 해당하는 Appendix2, Appendix3에 속하는 태그가 주어진 텍스트에 속한다고 판단되는 경우는 
+    더 높은 우선순위를 줘서 반환해줘.
     """
-    propmt_message_2 = str(tag) + """ 
+
+    # prompt_message_1 = """
+    # 너는 앞으로 주어진 텍스트로부터 반드시 Appendix, Appendix2 리스트 내에 속하는 태그 중 화자의 상황, 감정, 기분, 맥락에 가장 잘 맞는 5개의 태그를 담은 
+    # 파이썬의 list 형태로 반환해줘. 만약에 장르에 해당하는 Appendix2에 속하는 태그가 주어진 텍스트에 속한다고 판단되는 경우는 
+    # 더 높은 우선순위를 줘서 반환해줘.
+    # """
+
+    prompt_message_2 = str(tag) + """ 
     Appendix. 다음은 태그 리스트입니다. ./
     """
-    propmt_message_3 = str(genres) + """
+    prompt_message_3 = str(genres) + """
     Appendix2. 다음은 우선 고려대상인 장르 리스트입니다. ./
     """
     
-    propmt_message_4 = str(artists) + """
+    prompt_message_4 = str(artists) + """
     Appendix3. 다음은 우선 고려대상인 아티스트 리스트입니다. 
     """
     
     prompt = ChatPromptTemplate.from_messages([
-        ("system", propmt_message_1 + propmt_message_2 + propmt_message_3 + propmt_message_4),
+        ("system", prompt_message_1 + prompt_message_2 + prompt_message_3 + prompt_message_4),
         ("user", "{input}")
     ])
     
