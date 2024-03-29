@@ -15,7 +15,7 @@ def find_document_by_uri(uri):
     client = MongoClient(config.db_url)
     db = client['playlist_recommendation']
     users_collection = db['User']
-    document = users_collection.find_one({'uri': uri}, {'user_id': 1, 'top_track.track_id': 1})
+    document = users_collection.find_one({'uri': uri}, {'user_id': 1, 'top_track': 1})
     
     if document:
         print("Find A User Data")
@@ -38,7 +38,6 @@ def make_playlist(question, uri, type, tag_list):
         input_tag = ', '.join(filter_model(question, tag_list))
     elif type=="tag":
         input_tag = question
-    print(input_tag)
 
     middle = time.time()
     song_list = inference(login_user_data, input_tag)
