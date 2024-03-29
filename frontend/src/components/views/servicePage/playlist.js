@@ -112,7 +112,7 @@ function Playlist(props) {
                         <h3 className='artist'>{song.artist}</h3>
                     </div>
                     {login &&
-                        <Play song_uri={song.uri} playlist={Playlist} device_id={DeviceId} current_track={CurrentTrack}/>
+                        <Play song_uri={song.uri} song_title={song.title} song_artist={song.artist} playlist={Playlist} device_id={DeviceId} current_track={CurrentTrack}/>
                     }
                     {!login &&
                         <a href={link+search} target="_blank" rel="noopener noreferrer"><MdOutlinePlayCircle className='play' size={25}/></a>

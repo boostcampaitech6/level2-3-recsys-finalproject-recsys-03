@@ -239,45 +239,25 @@ def feedback(feedbackRequest:FeedbackRequest):
     db = client['playlist_recommendation']
     tracks_collection = db['Track']
     listening_collection = db['Listening Events']
+    users_collection = db['User']
 
     playlist_track = [s[14:] for s in feedbackRequest.playlist]
 
     results = tracks_collection.find({'uri': {'$in': playlist_track}})
+    user = users_collection.find_one({'uri': feedbackRequest.user_uri})
 
     track_id_list = [result['track_id'] for result in results]
 
     result = listening_collection.update_one(
-        {'user_id': feedbackRequest.user_id},
+        {'user_id': user['user_id']},
         {
             '$addToSet': {'track_id': {'$each': track_id_list}},
-            '$setOnInsert': {'user_id': feedbackRequest.user_id}
+            '$setOnInsert': {'user_id': user['user_id']}
         },
         upsert=True
     )
     return JSONResponse(content={"success": True})
 
-@router.post('/feedback')
-def feedback(feedbackRequest:FeedbackRequest):
-    client = MongoClient(config.db_url)
-    db = client['playlist_recommendation']
-    tracks_collection = db['Track']
-    listening_collection = db['Listening Events']
-
-    playlist_track = [s[14:] for s in feedbackRequest.playlist]
-
-    results = tracks_collection.find({'uri': {'$in': playlist_track}})
-
-    track_id_list = [result['track_id'] for result in results]
-
-    result = listening_collection.update_one(
-        {'user_id': feedbackRequest.user_id},
-        {
-            '$addToSet': {'track_id': {'$each': track_id_list}},
-            '$setOnInsert': {'user_id': feedbackRequest.user_id}
-        },
-        upsert=True
-    )
-    return JSONResponse(content={"success": True})
 
 # TODO test
 # @router.get('/refresh')
