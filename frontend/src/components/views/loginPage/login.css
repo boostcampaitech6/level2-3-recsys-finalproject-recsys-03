@@ -52,3 +52,40 @@
     margin: 0px 10px 20px 10px;
     width: 70%;
 }
+
+@media (max-width: 768px) {
+    .login{
+        justify-content: left;
+        align-items: center;
+    }
+
+    .login h1 {
+        font-size: 3rem;
+        margin: 0.5rem 10px;
+    }
+
+    .login h3{
+        font-size: 1.5rem;
+    }
+
+    .login p{
+        font-size: 0.95rem;
+        width: 90%;
+        text-align: center;
+        word-break: keep-all;
+    }
+
+    .buttons {
+        flex-direction: column;
+        margin-left: 0px;
+    }
+
+    .login button {
+        align-self: center;
+        margin: 0px 20px 10px 0px; 
+        padding: 5px 18px;
+        font-size: 0.95rem;
+        width: fit-content;
+    }
+
+}

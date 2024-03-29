@@ -79,3 +79,36 @@ button:hover {
 .chatSubmit:hover {
     color: #535C91;
 }
+
+@media (max-width: 768px) {
+    .chatbox{
+        width: 85vw;
+        height: 80vh;
+    }
+
+    .chatform{
+        width: 90vw;
+    }
+
+    .enterChat{
+        width: 80%;
+        height: 20px;
+        font-size: 0.95rem;
+    }
+
+    .tagList{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        width: 95vw;
+        flex-wrap: wrap;
+    }
+
+    .tag {
+        margin: 5px 3px; 
+        padding: 0.5px 10px;
+        font-size: 0.8rem;
+        font-weight: bolder;
+    }
+
+}
