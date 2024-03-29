@@ -115,7 +115,7 @@ async def login(token_info:Token):
             }
             top_item_list.append(music)
         new_track_list = list(set(music['uri'] for music in top_item_list)-set(listening_uri_list))
-        last_user = listening_collection.find_one(sort=[("user_id", -1)])
+        last_user = users_collection.find_one(sort=[("user_id", -1)])
 
         user_data= {
             'uri': user['id'],
