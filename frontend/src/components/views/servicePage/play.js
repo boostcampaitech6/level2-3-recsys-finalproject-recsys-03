@@ -9,6 +9,8 @@ function Play(props) {
     const [Pause, setPause] = useState(false)
     let playlist = props.playlist
     let song_uri = props.song_uri
+    let song_title = props.song_title
+    let song_artist = props.song_artist
     let token = localStorage.getItem("accessToken")
     let device_id = props.device_id
     let current_track = props.current_track
@@ -67,7 +69,7 @@ function Play(props) {
         setPause(true)
     }
 
-    if (current_track.uri==song_uri && !Pause) {
+    if (current_track.name==song_title && current_track.artists[0].name == song_artist && !Pause) {
         return(
             <MdOutlinePauseCircle className='play' onClick={click_pause} size={25}/>
         )

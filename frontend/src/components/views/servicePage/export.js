@@ -60,12 +60,13 @@ function Export(props) {
     
     //implicit feedback 받기
     const exported_items = (playlist, user_id) => {
-        axios.post('https://au-dionysos.com/api/feedback', {"playlist": playlist, "user_id": user_id})
+        console.log(playlist, user_id)
+        axios.post('https://au-dionysos.com/api/feedback', {"playlist": playlist, "user_uri": user_id})
         .then(response => {
-            if(response.ok){
+            if(response.data.success){
                 console.log("succes to save feedback")
             }else{
-                alert('fail to save feedback')
+                console.log('fail to save feedback')
             }
         })
     }

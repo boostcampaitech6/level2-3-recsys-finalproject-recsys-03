@@ -25,4 +25,4 @@ class User(BaseModel):
 
 class FeedbackRequest(BaseModel):
     playlist:list[str]
-    user_id: int
+    user_uri: str
