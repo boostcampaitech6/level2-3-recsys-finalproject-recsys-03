@@ -22,7 +22,7 @@ def inference(login_user_data, input_tags):
     recommended_playlist_dict = []  # 최종 추천 결과
 
     # track list가 없는 유저 (비회원)
-    if login_user_data.empty or login_user_data is None:
+    if login_user_data is None:
         # tag_model
         mapping_index_track, mapping_tag_index, graph_data = load_data_for_tag_model()
         embeddings = load_tag_model(graph_data)
@@ -106,7 +106,7 @@ def inference(login_user_data, input_tags):
     recommended_playlist_info = load_info(recommended_playlist, sideinfo_data)
     for i in range(len(recommended_playlist_info)):
         track_info = {
-            "id": recommended_playlist_info.loc[i]['track_id'],
+            "id": int(recommended_playlist_info.loc[i]['track_id']),
             "title": recommended_playlist_info.loc[i]['track_name'],
             "artist": recommended_playlist_info.loc[i]['artist_name'],
             "uri": recommended_playlist_info.loc[i]['uri']

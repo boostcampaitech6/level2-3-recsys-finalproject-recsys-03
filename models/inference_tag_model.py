@@ -64,7 +64,7 @@ def load_tag_model(graph_data):
     model = Model(data=graph_data, x_dim=args.x_dim, embedding_dim=args.embedding_dim, hidden_dim=args.hidden_dim, n_layers=args.n_layers).to(device)
     model.load_state_dict(torch.load(f'{args.model_dir}{args.model_filename}'))
     model.eval()    # 모델 평가 모드
-    
+
     # 모델을 통해 임베딩 추출
     embeddings = model(graph_data.to(device))
     

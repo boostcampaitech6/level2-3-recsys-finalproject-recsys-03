@@ -144,7 +144,7 @@ function Service(props) {
                 <InfoList tags={Tags} chats={ChatList} playlists={Playlists} login={Login} user_uri={UserUri}/>
             </div>
             <form onSubmit={onSubmit} className='chatform'>
-                <textarea className='enterChat'
+                <input type='text' className='enterChat'
                     onChange={handleClick}
                     value={Chat}
                     rows={1}
