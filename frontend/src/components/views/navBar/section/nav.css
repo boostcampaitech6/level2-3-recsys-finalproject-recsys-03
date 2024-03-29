@@ -55,3 +55,18 @@ hr{
   border-top: 3px solid;
   width: 98%;
 }
+
+@media (max-width: 768px) {
+  .menu {
+    height: 3vh;
+  }
+
+  .menu__logo a {
+    font-size: 0.95rem;
+  }
+  
+  .menu__logo img {
+    width: 25px;
+    height: 25px;
+  }
+}

@@ -66,6 +66,9 @@ function Service(props) {
                 alert('로그인에 문제가 생겨 로그인페이지로 이동합니다')
                 navigate('/')
             }
+        }).catch(err => {
+            alert('로그인 기능을 이용하고 싶으시다면 관리자에게 문의주세요')
+            navigate('/')
         })
     }
     
@@ -144,7 +147,7 @@ function Service(props) {
                 <InfoList tags={Tags} chats={ChatList} playlists={Playlists} login={Login} user_uri={UserUri}/>
             </div>
             <form onSubmit={onSubmit} className='chatform'>
-                <textarea className='enterChat'
+                <input type="text" className='enterChat'
                     onChange={handleClick}
                     value={Chat}
                     rows={1}

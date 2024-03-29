@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { MdOutlineRemoveCircleOutline } from "react-icons/md";
+import { MdOutlinePlayCircle } from "react-icons/md"
 
 import Play from './play'
 import Export from './export'
@@ -94,6 +95,8 @@ function Playlist(props) {
 
     //playlist component
     const playlist_song = Playlist.map((song, index)=>{
+        let link = 'https://www.youtube.com/results?search_query='
+        let search = (song.artist + '+' + song.title).replace(' ', '+')
         return(
             <div key={index}>
                 <div className='song'>
@@ -108,6 +111,9 @@ function Playlist(props) {
                     </div>
                     {login &&
                         <Play song_uri={song.uri} playlist={Playlist} device_id={DeviceId} current_track={CurrentTrack}/>
+                    }
+                    {!login &&
+                        <a href={link+search} target="_blank" rel="noopener noreferrer"><MdOutlinePlayCircle className='play' size={25}/></a>
                     }
                     <MdOutlineRemoveCircleOutline className='remove' onClick={() => remove_song(index)} size={25}/>
                 </div>
