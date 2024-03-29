@@ -28,14 +28,14 @@ def find_document_by_uri(uri):
     else:
         return None
 
-def make_playlist(question, uri, type, tag_list):
+def make_playlist(question, uri, type, tags, genres, artists):
     start = time.time()
     # 유저 시청 이력 수집
     login_user_data = find_document_by_uri(uri)
     # 채팅 입력 -> 적합한 태그 5개 선택
 
     if type=="chat":
-        input_tag = ', '.join(filter_model(question, tag_list))
+        input_tag = ', '.join(filter_model(question, tags, genres, artists))
     elif type=="tag":
         input_tag = question
 

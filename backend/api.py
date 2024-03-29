@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from config import config
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from pymongo import MongoClient 
-from schemas import Token, ChatRequest, Track, User
+from schemas import Token, ChatRequest, Track, User, FeedbackRequest
 from make_playlist import make_playlist
 import pandas as pd
 from httpx import AsyncClient
@@ -115,7 +115,7 @@ async def login(token_info:Token):
             }
             top_item_list.append(music)
         new_track_list = list(set(music['uri'] for music in top_item_list)-set(listening_uri_list))
-        last_user = listening_collection.find_one(sort=[("user_id", -1)])
+        last_user = users_collection.find_one(sort=[("user_id", -1)])
 
         user_data= {
             'uri': user['id'],
@@ -211,9 +211,7 @@ async def recommend_tag(chatRequest:ChatRequest):
     #     playlist.append(track)
     # if not titles:
     #     return JSONResponse(content={"success": False, "message": "Can't get recommend result"})
-    playlist = make_playlist(chat, user_uri, type, tags)
-    
-    playlist, input_tags = make_playlist(chat, user_uri, tags, type)
+    playlist, input_tags = make_playlist(chat, user_uri, type, tags, genres, artists)
     
     for item in playlist:
         item['uri'] = "spotify:track:" + item['uri']
@@ -232,8 +230,54 @@ async def recommend_tag(chatRequest:ChatRequest):
     
     end = time.time()
     print(f"{end - start:.5f} sec")
-    print(playlist)
+   
     return JSONResponse(content={"success": True, "playlist": playlist})
+
+@router.post('/feedback')
+def feedback(feedbackRequest:FeedbackRequest):
+    client = MongoClient(config.db_url)
+    db = client['playlist_recommendation']
+    tracks_collection = db['Track']
+    listening_collection = db['Listening Events']
+
+    playlist_track = [s[14:] for s in feedbackRequest.playlist]
+
+    results = tracks_collection.find({'uri': {'$in': playlist_track}})
+
+    track_id_list = [result['track_id'] for result in results]
+
+    result = listening_collection.update_one(
+        {'user_id': feedbackRequest.user_id},
+        {
+            '$addToSet': {'track_id': {'$each': track_id_list}},
+            '$setOnInsert': {'user_id': feedbackRequest.user_id}
+        },
+        upsert=True
+    )
+    return JSONResponse(content={"success": True})
+
+@router.post('/feedback')
+def feedback(feedbackRequest:FeedbackRequest):
+    client = MongoClient(config.db_url)
+    db = client['playlist_recommendation']
+    tracks_collection = db['Track']
+    listening_collection = db['Listening Events']
+
+    playlist_track = [s[14:] for s in feedbackRequest.playlist]
+
+    results = tracks_collection.find({'uri': {'$in': playlist_track}})
+
+    track_id_list = [result['track_id'] for result in results]
+
+    result = listening_collection.update_one(
+        {'user_id': feedbackRequest.user_id},
+        {
+            '$addToSet': {'track_id': {'$each': track_id_list}},
+            '$setOnInsert': {'user_id': feedbackRequest.user_id}
+        },
+        upsert=True
+    )
+    return JSONResponse(content={"success": True})
 
 # TODO test
 # @router.get('/refresh')

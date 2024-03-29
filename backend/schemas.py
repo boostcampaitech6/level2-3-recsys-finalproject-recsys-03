@@ -22,3 +22,7 @@ class recommendResponse(BaseModel):
 
 class User(BaseModel):
     user_uri: str
+
+class FeedbackRequest(BaseModel):
+    playlist:list[str]
+    user_id: int
