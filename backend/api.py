@@ -141,7 +141,7 @@ async def recommend_displayed_tags(user: User):
     user_uri = user.user_uri
     # 비회원인 경우
     if user_uri == "":
-        tag_list = ["winter", "kpop", "pop", "energetic", "sadness", "00s", "singer songwriter", "piano"]
+        tag_list = ["kpop", "pop", "energetic", "sadness", "00s", "singer songwriter", "piano"]
     else:
         # MongoDB 연결
         client = MongoClient(config.db_url)
@@ -156,7 +156,7 @@ async def recommend_displayed_tags(user: User):
             tags = user.get("tag_counts", {})
             tag_list = list(tags.keys())[:7]
         else:
-            tag_list = ["winter", "kpop", "pop", "energetic", "sadness", "00s", "singer songwriter", "piano"]
+            tag_list = ["kpop", "pop", "energetic", "sadness", "00s", "singer songwriter", "piano"]
         
     # 현재 월, 시간, 날씨를 기반으로 태그 추천
     now = datetime.now()
