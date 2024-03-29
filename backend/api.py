@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from config import config
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from pymongo import MongoClient 
-from schemas import Token, ChatRequest, Track, User
+from schemas import Token, ChatRequest, Track, User, FeedbackRequest
 from make_playlist import make_playlist
 import pandas as pd
 from httpx import AsyncClient
@@ -233,6 +233,29 @@ async def recommend_tag(chatRequest:ChatRequest):
     print(f"{end - start:.5f} sec")
     print(playlist)
     return JSONResponse(content={"success": True, "playlist": playlist[0]})
+
+@router.post('/feedback')
+def feedback(feedbackRequest:FeedbackRequest):
+    client = MongoClient(config.db_url)
+    db = client['playlist_recommendation']
+    tracks_collection = db['Track']
+    listening_collection = db['Listening Events']
+
+    playlist_track = [s[14:] for s in feedbackRequest.playlist]
+
+    results = tracks_collection.find({'uri': {'$in': playlist_track}})
+
+    track_id_list = [result['track_id'] for result in results]
+
+    result = listening_collection.update_one(
+        {'user_id': feedbackRequest.user_id},
+        {
+            '$addToSet': {'track_id': {'$each': track_id_list}},
+            '$setOnInsert': {'user_id': feedbackRequest.user_id}
+        },
+        upsert=True
+    )
+    return JSONResponse(content={"success": True})
 
 # TODO test
 # @router.get('/refresh')
