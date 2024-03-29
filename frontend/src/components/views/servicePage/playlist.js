@@ -90,7 +90,9 @@ function Playlist(props) {
 
     const remove_song = (index) => {
         let new_playlist = [...Playlist.slice(0, index), ...Playlist.slice(index + 1)]
+        let new_imglist = [...ImageList.slice(0, index), ...ImageList.slice(index + 1)]
         setPlaylist(new_playlist)
+        setImageList(new_imglist)
     }
 
     //playlist component
