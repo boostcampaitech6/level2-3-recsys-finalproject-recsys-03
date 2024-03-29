@@ -6,7 +6,7 @@ def parse_args():
 
     # 데이터 파라미터
     parser.add_argument('--data_dir', default='../data/', type=str, help='data 폴더 경로')
-    parser.add_argument('--log_dir', default='./log/', type=str, help='log 폴더 경로')
+    parser.add_argument('--log_dir', default='../models/log/', type=str, help='log 폴더 경로')
     parser.add_argument('--model_dir', default='../models/model/', type=str, help='model 폴더 경로')
     parser.add_argument('--track_filename', default='track.csv', type=str, help='track 파일명 (csv 형식)')
     parser.add_argument('--artist_filename', default='artist_context.csv', type=str, help='artist 파일명 (csv 형식)')

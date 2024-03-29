@@ -28,6 +28,7 @@
     color: #1B1A55;
     font-weight: bolder;
     width: fit-content;
+    word-break: keep-all;
 }
 
 .playlist_box{
@@ -116,6 +117,14 @@
     margin-right: auto;
 }
 
+.song a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
+
 .title{
     margin: 7px 5px 0px 7px;
     padding-bottom: 0px;
@@ -132,6 +141,7 @@
 
 .remove{
     align-items: center;
+    flex: none;
     margin: 3px; 
     padding: 3px;
     background-color: #9290C3;
@@ -146,6 +156,7 @@
 
 .play{
     align-items: center;
+    flex: none;
     margin: 3px 7px; 
     padding: 3px;
     background-color: #9290C3;
@@ -169,4 +180,50 @@
     width: 43px;
     height: 43px;
     margin: 3px;
+}
+
+@media (max-width: 768px) {
+    .sender{
+        margin: 5px 20px 0px 20px;
+        padding: 0px 0px 3px 0px;
+        font-size: 0.98rem;
+    }
+
+    .chat{
+        font-size: 0.98rem;
+        margin: 0px 15px 3px 15px;
+        padding: 7px 12px;
+    }
+
+    .playlist_head{
+        font-size: 1rem;
+    }
+
+    .song{
+        margin: 0px 10px;
+    }
+
+    .title{
+        font-size: 0.98rem;
+    }
+    
+    .artist{
+        font-size: 0.8rem;
+    }
+
+    .save{
+        margin: 10px;
+    }
+
+    .play{
+        align-items: center;
+        flex: none;
+        margin: 3px 0px; 
+        padding: 3px;
+        background-color: #9290C3;
+        color: #1B1A55;
+        font-weight: bolder;
+        border: none;
+    }
+
 }
