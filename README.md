@@ -114,7 +114,9 @@
 
 
 ## 📆프로젝트 타임라인
+<div align=center> 
 <img width="684" alt="서비스 아키텍처" src="https://github.com/boostcampaitech6/level2-3-recsys-finalproject-recsys-03/assets/140307903/44572a9b-d72e-4e04-bfd4-45f9b39e031a">
+</div>
 
 <br><br>
 
