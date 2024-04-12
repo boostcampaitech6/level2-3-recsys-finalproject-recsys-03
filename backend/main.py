@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from api import router
+from in_momory import load_tag_model, load_cbf_model
 
 
 # Dev, Prod 구분에 따라 어떻게 구현할 것인가?
@@ -28,7 +29,29 @@ origins = [
     "https://api.spotify.com/v1/"
 ]
 
-app = FastAPI()
+tag_model_dict = None
+cbf_model_dict = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Start Up Event")
+    # global 변수 설정
+    global tag_model_dict, cbf_model_dict
+    
+    tag_model_dict = load_tag_model()
+    cbf_model_dict = load_cbf_model()
+    
+    # 이전은 앱 시작 전 동작
+    yield
+    # 이후는 앱 종료 때 동작
+    
+    print("Shutdown Event!")
+    # PyTorch 모델은 직접적인 메모리 해제 함수가 없음, 모델과 데이터에 None을 할당하여 참조 제거
+    tag_model_dict = None
+    cbf_model_dict = None
+
+app = FastAPI(lifespan = lifespan)
+
 app.add_middleware(SessionMiddleware, secret_key="some-secret-key")
 app.add_middleware(
     CORSMiddleware,
