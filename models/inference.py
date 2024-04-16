@@ -10,7 +10,7 @@ def load_data():
 
     return sideinfo_data
 
-def inference(login_user_data, input_tags):
+def inference(login_user_data, input_tags, tag_model_dict, cbf_model_dict):
     
     '''
     #input type example:

@@ -1,10 +1,14 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from contextlib import asynccontextmanager
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from api import router
-from in_momory import load_tag_model, load_cbf_model
+from backend.in_memory import model_memory
 
+# print(dir(backend))
+# members = inspect.getmembers(backend)
+# for member in members:
+#     print(member)
 
 # Dev, Prod 구분에 따라 어떻게 구현할 것인가?
 # Data Input / Output 고려
@@ -35,12 +39,9 @@ cbf_model_dict = None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("Start Up Event")
-    # global 변수 설정
-    global tag_model_dict, cbf_model_dict
-    
-    tag_model_dict = load_tag_model()
-    cbf_model_dict = load_cbf_model()
-    
+    model_memory.load_tag_model_memory()
+    model_memory.load_cbf_model_memory()
+
     # 이전은 앱 시작 전 동작
     yield
     # 이후는 앱 종료 때 동작

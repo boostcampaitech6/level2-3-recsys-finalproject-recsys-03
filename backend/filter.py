@@ -8,7 +8,8 @@ from config import config
 
 # tags = ['사랑', '고통', '의도', '위로', '진실', '솔직함', '고난', '자아성찰', '자기계발', '희망']
 
-def filter_model(question, tag, genres, artists):
+#def filter_model(question, tag, genres, artists):
+def filter_model(question, tag_list):
     llm = ChatOpenAI(openai_api_key=config.open_ai_api_key)
     
     # prompt_message_1 =  """ 1. 당신은 문장이나 단어에서 태그를 추출하는 태그 추출기가 됩니다. 선택할 수 있는 태그 후보 맨 아래에 드리겠습니다.
@@ -20,34 +21,48 @@ def filter_model(question, tag, genres, artists):
     # 7. 생성되는 5개의 태그는 밑에 있는 Appendix, Appendix2, Appendix3의 리스트에 포함되어있어야합니다.
     # """
 
-    prompt_message_1 = """
-    너는 앞으로 주어진 텍스트로부터 반드시 Appendix, Appendix2, Appendix3 리스트 내에 속하는 태그 중 화자의 장르, 아티스트, 상황, 감정, 기분, 맥락에 가장 잘 맞는 6개의 태그를 담은 
-    파이썬의 list 형태로 반환해줘. 만약에 장르나 아티스트 이름에 해당하는 Appendix2, Appendix3에 속하는 태그가 주어진 텍스트에 속한다고 판단되는 경우는 
-    더 높은 우선순위를 줘서 반환해줘.
-    """
-
     # prompt_message_1 = """
-    # 너는 앞으로 주어진 텍스트로부터 반드시 Appendix, Appendix2 리스트 내에 속하는 태그 중 화자의 상황, 감정, 기분, 맥락에 가장 잘 맞는 5개의 태그를 담은 
-    # 파이썬의 list 형태로 반환해줘. 만약에 장르에 해당하는 Appendix2에 속하는 태그가 주어진 텍스트에 속한다고 판단되는 경우는 
+    # 너는 앞으로 주어진 텍스트로부터 반드시 Appendix, Appendix2, Appendix3 리스트 내에 속하는 태그 중 화자의 장르, 아티스트, 상황, 감정, 기분, 맥락에 가장 잘 맞는 6개의 태그를 담은 
+    # 파이썬의 list 형태로 반환해줘. 만약에 장르나 아티스트 이름에 해당하는 Appendix2, Appendix3에 속하는 태그가 주어진 텍스트에 속한다고 판단되는 경우는 
     # 더 높은 우선순위를 줘서 반환해줘.
     # """
 
-    prompt_message_2 = str(tag) + """ 
+    # # prompt_message_1 = """
+    # # 너는 앞으로 주어진 텍스트로부터 반드시 Appendix, Appendix2 리스트 내에 속하는 태그 중 화자의 상황, 감정, 기분, 맥락에 가장 잘 맞는 5개의 태그를 담은 
+    # # 파이썬의 list 형태로 반환해줘. 만약에 장르에 해당하는 Appendix2에 속하는 태그가 주어진 텍스트에 속한다고 판단되는 경우는 
+    # # 더 높은 우선순위를 줘서 반환해줘.
+    # # """
+
+    # prompt_message_2 = str(tag) + """ 
+    # Appendix. 다음은 태그 리스트입니다. ./
+    # """
+    # prompt_message_3 = str(genres) + """
+    # Appendix2. 다음은 우선 고려대상인 장르 리스트입니다. ./
+    # """
+    
+    # prompt_message_4 = str(artists) + """
+    # Appendix3. 다음은 우선 고려대상인 아티스트 리스트입니다. 
+    # """
+    
+    # prompt = ChatPromptTemplate.from_messages([
+    #     ("system", prompt_message_1 + prompt_message_2 + prompt_message_3 + prompt_message_4),
+    #     ("user", "{input}")
+    # ])
+    
+    prompt_message_1 =  """ 1. 당신은 문장이나 단어에서 태그를 추출하는 태그 추출기가 됩니다. 선택할 수 있는 태그 후보는 맨 아래의 Appendix에 드리겠습니다.
+    2. 사람이 쓴 문장을 드릴 테니 읽어보시고, 태그 후보 목록에서 화자가 언급한 장르, 아티스트, 화자의 상황, 감정, 기분, 맥락에 가장 잘 맞는 5개의 태그를 고르시면 됩니다.
+    3. 태그나 단어를 받은 경우, 반드시 결과물에 태그가 포함되어 있어야 합니다.
+    4. 5개의 태그를 선택할 수 있으며 반드시 파이썬의 List 형태로 반환해야 합니다!
+    5. 생성되는 5개의 태그는 밑에 있는 Appendix의 리스트에 포함되어있어야합니다.
+    """
+    prompt_message_2 = str(tag_list) + """ 
     Appendix. 다음은 태그 리스트입니다. ./
     """
-    prompt_message_3 = str(genres) + """
-    Appendix2. 다음은 우선 고려대상인 장르 리스트입니다. ./
-    """
-    
-    prompt_message_4 = str(artists) + """
-    Appendix3. 다음은 우선 고려대상인 아티스트 리스트입니다. 
-    """
-    
     prompt = ChatPromptTemplate.from_messages([
-        ("system", prompt_message_1 + prompt_message_2 + prompt_message_3 + prompt_message_4),
+        ("system", prompt_message_1 + prompt_message_2),
         ("user", "{input}")
     ])
-    
+
     chain = prompt | llm 
     result = str(chain.invoke({"input": question}))
     print(result)

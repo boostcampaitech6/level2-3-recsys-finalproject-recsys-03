@@ -35,7 +35,7 @@ function Play(props) {
             }else{
                 console.log('fail to play the music')
                 alert('음악 재생에 문제가 생겨 페이지를 새로고침합니다')
-                navigate('/service')
+                window.location.reload()
             }
         })
     }
@@ -53,7 +53,7 @@ function Play(props) {
             }else{
                 console.log('fail to pause')
                 alert('일시중지에 문제가 생겨 페이지를 새로고침합니다')
-                navigate('/service')
+                window.location.reload()
             }
         })
     }

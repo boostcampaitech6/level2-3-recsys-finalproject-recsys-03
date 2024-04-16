@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.responses import JSONResponse
 from config import config
 from authlib.integrations.starlette_client import OAuth, OAuthError
@@ -11,6 +11,7 @@ from datetime import datetime
 from collections import Counter
 import requests
 import time
+from backend.in_memory import model_memory
 
 
 router = APIRouter()
@@ -195,6 +196,8 @@ async def recommend_tag(chatRequest:ChatRequest):
     chat = chatRequest.chat
     user_uri = chatRequest.user_uri
     type = chatRequest.type
+    tag_model_dict = model_memory.tag_model_dict
+    cbf_model_dict = model_memory.cbf_model_dict
 
     # 태그 리스트 (context tag, genre tag, artist tag)
     df_tags = pd.read_csv('../data/tag_context.csv', usecols=['tag_name'])
@@ -211,7 +214,12 @@ async def recommend_tag(chatRequest:ChatRequest):
     #     playlist.append(track)
     # if not titles:
     #     return JSONResponse(content={"success": False, "message": "Can't get recommend result"})
-    playlist, input_tags = make_playlist(chat, user_uri, type, tags, genres, artists)
+    #playlist, input_tags = make_playlist(chat, user_uri, type, tags, genres, artists)
+    tag_list = tags_all + artists
+    playlist, input_tags = make_playlist(chat, user_uri, type, tag_list, tag_model_dict, cbf_model_dict)
+    
+    if input_tags == " " or input_tags == "":
+        return JSONResponse(content={"success": False, "playlist": playlist})
     
     for item in playlist:
         item['uri'] = "spotify:track:" + item['uri']

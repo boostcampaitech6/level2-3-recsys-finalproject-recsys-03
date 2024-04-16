@@ -115,9 +115,13 @@ function Service(props) {
                 console.log("succes to get playlist")
                 setPlaylist(response.data.playlist)
             }else{
+                if (response.data.playlist == ""){
+                    alert('텍스트와 알맞는 노래를 찾지못했습니다')
+                }
                 //console.log('fail to get playlist')
                 alert('추천 시스템에 문제가 생겨 페이지를 새로고침합니다')
-                navigate('/service')
+                //navigate('/service',{ replace: true })
+                window.location.reload()
             }
         })
     }
