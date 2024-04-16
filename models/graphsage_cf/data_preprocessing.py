@@ -21,6 +21,9 @@ def load_data(args):
         user_id.extend([user_id_tmp]*len(track_list_tmp))
         track_id.extend(track_list_tmp)
     user_track = pd.DataFrame({'user_id': user_id, 'track_id': track_id})
+        
+    # user 당 track 20개씩 샘플링
+    user_track = user_track.groupby('user_id').apply(lambda x: x.sample(n=20, replace=True) if len(x) > 20 else x).reset_index(drop=True)
     
     # track 데이터
     track = pd.read_csv(f'{args.data_dir}{args.track_filename}')

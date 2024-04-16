@@ -28,7 +28,7 @@ def find_document_by_uri(uri):
     else:
         return None
 
-def make_playlist(question, uri, type, tags, genres, artists):
+def make_playlist(question, uri, type, tag_list, tag_model_dict, cbf_model_dict):
     start = time.time()
     # 유저 시청 이력 수집
     login_user_data = find_document_by_uri(uri)
@@ -36,13 +36,20 @@ def make_playlist(question, uri, type, tags, genres, artists):
 
     if type=="chat":
         #input_tag = ', '.join(filter_model(question, tags, genres, artists))
-        prompt_tags = filter_model(question, tags, genres, artists)
-        input_tag = ', '.join([tag for tag in prompt_tags if tag in tags+genres+artists])
+        # prompt_tags = filter_model(question, tags, genres, artists)
+        # input_tag = ', '.join([tag for tag in prompt_tags if tag in tags+genres+artists])
+        prompt_tags = filter_model(question, tag_list)
+        input_tag = ', '.join([tag for tag in prompt_tags if tag in tag_list])
+        if input_tag == " " or input_tag == "":
+            song_list = ""
+            return song_list, input_tag
+        
     elif type=="tag":
         input_tag = question
 
     middle = time.time()
-    song_list = inference(login_user_data, input_tag)
+
+    song_list = inference(login_user_data, input_tag, tag_model_dict, cbf_model_dict)
     end = time.time()
     print(f"middle time : {middle - start:.5f} sec")
     print(f"end time : {end - middle:.5f} sec")
