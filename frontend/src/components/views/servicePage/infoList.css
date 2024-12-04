@@ -1,0 +1,229 @@
+.chats {
+    display: flex;
+    flex-direction: column;
+}
+
+.user_chat{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: right;
+}
+
+.sender{
+    margin: 15px 20px 0px 20px;
+    padding: 10px 0px 3px 0px;
+    color:#9290C3;
+    font-size: medium;
+    font-weight: 700;
+}
+
+.chat{
+    align-items: center;
+    background-color: #9290C3;
+    border: 2px solid #535C91;
+    border-radius: 15px;
+    margin: 0px 15px 3px 15px;
+    padding: 10px 15px;
+    color: #1B1A55;
+    font-weight: bolder;
+    width: fit-content;
+    word-break: keep-all;
+}
+
+.playlist_box{
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: center;
+    background-color: #9290C3;
+    width: fit-content;
+    margin: 0px 3px 3px 15px;
+    padding: 0px 5px 0px 5px;
+    border-radius: 15px;
+    border: 2px solid #535C91;
+}
+
+.playlist_head{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    width: 90%;
+    font-size: large;
+    font-weight: bolder;
+    color: #1B1A55;
+    margin: 7px 0px;
+}
+
+.playlist_head h2 {
+    margin: auto;
+    font-weight: 800;
+    padding: 5px 10px
+}
+
+.save_container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.save{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 20px;
+    background-color: #1B1A55;
+    padding: 3px;
+    margin: 20px;
+}
+
+.save:hover{
+    background-color: #535C91;
+}
+
+.save h3 {
+    color: #9290C3;
+    font-size: x-small;
+    font-weight: bolder;
+    margin: 3px 5px;
+}
+
+.save img{
+    width: 21px;
+    height: 21px;
+    margin: 3px 5px;
+}
+
+.playlist_content{
+    display: flex;
+    flex-direction: column;   
+}
+
+.song{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-direction: row;
+    margin: 0px 20px;
+    border-top: 2px solid #535C91;
+}
+
+.song_info{
+    display: flex;
+    flex-direction: column;
+    margin-right: auto;
+}
+
+.song a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+}
+
+.title{
+    margin: 7px 5px 0px 7px;
+    padding-bottom: 0px;
+    color: #1B1A55;
+    font-weight: bolder;
+}
+
+.artist{
+    margin: 0px 5px 7px 7px;
+    padding-top: 0px;
+    color: #535C91;
+    font-size: small;
+}
+
+.remove{
+    align-items: center;
+    flex: none;
+    margin: 3px; 
+    padding: 3px;
+    background-color: #9290C3;
+    color: #1B1A55;
+    font-weight: bolder;
+    border: none;
+}
+
+.remove:hover{
+    color: #535C91;
+}
+
+.play{
+    align-items: center;
+    flex: none;
+    margin: 3px 7px; 
+    padding: 3px;
+    background-color: #9290C3;
+    color: #1B1A55;
+    font-weight: bolder;
+    border: none;
+}
+
+.play:hover{
+    color: #535C91;
+}
+
+.album_art {
+    align-items: center;
+}
+.song img {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 43px;
+    height: 43px;
+    margin: 3px;
+}
+
+@media (max-width: 768px) {
+    .sender{
+        margin: 5px 20px 0px 20px;
+        padding: 0px 0px 3px 0px;
+        font-size: 0.98rem;
+    }
+
+    .chat{
+        font-size: 0.98rem;
+        margin: 0px 15px 3px 15px;
+        padding: 7px 12px;
+    }
+
+    .playlist_head{
+        font-size: 1rem;
+    }
+
+    .song{
+        margin: 0px 10px;
+    }
+
+    .title{
+        font-size: 0.98rem;
+    }
+    
+    .artist{
+        font-size: 0.8rem;
+    }
+
+    .save{
+        margin: 10px;
+    }
+
+    .play{
+        align-items: center;
+        flex: none;
+        margin: 3px 0px; 
+        padding: 3px;
+        background-color: #9290C3;
+        color: #1B1A55;
+        font-weight: bolder;
+        border: none;
+    }
+
+}
